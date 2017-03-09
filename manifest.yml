@@ -1,0 +1,16 @@
+---
+applications:
+- name: analytics-api
+  buildpack: nodejs_buildpack
+  memory: 128M
+  instances: 2
+  command: npm start
+  services:
+  - analytics-reporter-database
+- name: analytics-api-staging
+  buildpack: nodejs_buildpack
+  memory: 128M
+  instances: 2
+  command: npm start
+  services:
+  - analytics-reporter-database
