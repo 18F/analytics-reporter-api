@@ -22,7 +22,6 @@ const fetchData = (req, res) => {
 }
 
 app.get("/", (req, res) => {
-  console.log(req.headers)
   res.json({
     current_time: new Date(),
   })
