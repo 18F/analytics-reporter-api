@@ -1,9 +1,11 @@
 const express = require("express")
+const apiDataGovFilter = require("./api-data-gov-filter")
 const db = require("./db")
 const logger = require("./logger")
 
 const app = express()
 app.use(logger.middleware)
+app.use(apiDataGovFilter)
 
 const fetchData = (req, res) => {
   const params = Object.assign(req.query, req.params)
@@ -20,6 +22,7 @@ const fetchData = (req, res) => {
 }
 
 app.get("/", (req, res) => {
+  console.log(req.headers)
   res.json({
     current_time: new Date(),
   })

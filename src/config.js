@@ -1,4 +1,5 @@
 module.exports = {
+  api_data_gov_secret: process.env.API_DATA_GOV_SECRET,
   port: process.env.PORT || 4444,
   postgres: {
     host : process.env.POSTGRES_HOST,
