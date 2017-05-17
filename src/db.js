@@ -10,6 +10,8 @@ const query = ({ report_name, report_agency = null, limit = 1000, page = 1 }) =>
   return db("analytics_data")
     .where({ report_name, report_agency })
     .orderBy("date_time", "desc")
+    .orderByRaw("CAST(data->>'total_events' AS INTEGER) desc")
+    .orderByRaw("CAST(data->>'visits' AS INTEGER) desc")
     .limit(limit)
     .offset((page - 1) * limit)
 }
