@@ -24,8 +24,8 @@ const query = ({ reportName, reportAgency = null, limit = 1000, page = 1 }) => {
   const pageParam = parsePageParam(page);
 
   return db('analytics_data')
-    .where({ reportName, reportAgency })
-    .orderBy('date_time', 'desc')
+    .where({ report_name: reportName, report_agency: reportAgency })
+    .orderBy('date', 'desc')
     .orderByRaw('CAST(data->>\'total_events\' AS INTEGER) desc')
     .orderByRaw('CAST(data->>\'visits\' AS INTEGER) desc')
     .limit(limitParam)

@@ -19,52 +19,70 @@ describe('app', () => {
 
   it('should pass params from the url to db.query and render the result', done => {
     db.query = (params) => {
-      expect(params.report_agency).to.equal('fake-agency');
-      expect(params.report_name).to.equal('fake-report');
-      return Promise.resolve(['row 1', 'row 2']);
+      expect(params.reportAgency).to.equal('fake-agency');
+      expect(params.reportName).to.equal('fake-report');
+      return Promise.resolve([
+        { id: 1, date: new Date('2017-01-01') },
+        { id: 2, date: new Date('2017-01-02') }
+      ]);
     };
 
     const dataRequest = request(app)
-      .get('/agencies/fake-agency/reports/fake-report/data')
+      .get('/v1/agencies/fake-agency/reports/fake-report/data')
       .expect(200);
 
     dataRequest.then(response => {
-      expect(response.body).to.deep.equal(['row 1', 'row 2']);
+      expect(response.body).to.deep.equal([
+        { id: 1, date: '2017-01-01' },
+        { id: 2, date: '2017-01-02' }
+      ]);
       done();
     }).catch(done);
   });
 
   it('should not pass the agency param if the request does not specify and agency', done => {
     db.query = (params) => {
-      expect(params.report_agency).to.be.undefined;
-      expect(params.report_name).to.equal('fake-report');
-      return Promise.resolve(['row 1', 'row 2']);
+      expect(params.reportAgency).to.be.undefined;
+      expect(params.reportName).to.equal('fake-report');
+      return Promise.resolve([
+        { id: 1, date: new Date('2017-01-01') },
+        { id: 2, date: new Date('2017-01-02') }
+      ]);
     };
 
     const dataRequest = request(app)
-      .get('/reports/fake-report/data')
+      .get('/v1/reports/fake-report/data')
       .expect(200);
 
     dataRequest.then(response => {
-      expect(response.body).to.deep.equal(['row 1', 'row 2']);
+      expect(response.body).to.deep.equal([
+        { id: 1, date: '2017-01-01' },
+        { id: 2, date: '2017-01-02' }
+      ]);
       done();
     }).catch(done);
   });
 
   it('should merge the params in the url with query params', done => {
     db.query = (params) => {
-      expect(params.report_agency).to.equal('fake-agency');
-      expect(params.report_name).to.equal('fake-report');
+      expect(params.reportAgency).to.equal('fake-agency');
+      expect(params.reportName).to.equal('fake-report');
       expect(params.limit).to.equal('50');
-      return Promise.resolve(['row 1', 'row 2']);
+      return Promise.resolve([
+        { id: 1, date: new Date('2017-01-01') },
+        { id: 2, date: new Date('2017-01-02') }
+      ]);
     };
 
     const dataRequest = request(app)
-      .get('/agencies/fake-agency/reports/fake-report/data?limit=50')
+      .get('/v1/agencies/fake-agency/reports/fake-report/data?limit=50')
       .expect(200);
 
     dataRequest.then(response => {
-      expect(response.body).to.deep.equal(['row 1', 'row 2']);
+      expect(response.body).to.deep.equal([
+        { id: 1, date: '2017-01-01' },
+        { id: 2, date: '2017-01-02' }
+      ]);
       done();
     }).catch(done);
   });
@@ -73,7 +91,7 @@ describe('app', () => {
     db.query = () => Promise.reject('This is a test of the emergency broadcast system.');
 
     const dataRequest = request(app)
-      .get('/agencies/fake-agency/reports/fake-report/data')
+      .get('/v1/agencies/fake-agency/reports/fake-report/data')
       .expect(400);
 
     dataRequest.then(response => {

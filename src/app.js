@@ -7,12 +7,19 @@ const app = express();
 app.use(logger.middleware);
 app.use(apiDataGovFilter);
 
+const formatDateForDataPoint = (dataPoint) => {
+  if (dataPoint.date) {
+    return dataPoint.date.toISOString().slice(0, 10);
+  }
+  return null;
+};
+
 const fetchData = (req, res) => {
   const params = Object.assign(req.query, req.params);
   db.query(params).then(result => {
     const response = result.map(dataPoint => Object.assign({
       id: dataPoint.id,
-      date_time: dataPoint.date_time,
+      date: formatDateForDataPoint(dataPoint),
       report_name: dataPoint.report_name,
       report_agency: dataPoint.report_agency
     }, dataPoint.data));
