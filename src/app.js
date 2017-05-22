@@ -32,7 +32,7 @@ app.get("/", (req, res) => {
     current_time: new Date(),
   })
 })
-app.get("/agencies/:report_agency/reports/:report_name/data", fetchData)
-app.get("/reports/:report_name/data", fetchData)
+app.get("/v1/agencies/:report_agency/reports/:report_name/data", fetchData)
+app.get("/v1/reports/:report_name/data", fetchData)
 
 module.exports = app
