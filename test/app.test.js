@@ -1,86 +1,87 @@
-const logger = require("../src/logger")
-logger.level = "error"
+const logger = require('../src/logger');
 
-const expect = require("chai").expect
-const proxyquire = require("proxyquire")
-const request = require("supertest-as-promised")
+logger.level = 'error';
 
-const db = {}
+const expect = require('chai').expect;
+const proxyquire = require('proxyquire');
+const request = require('supertest-as-promised');
 
-const app = proxyquire("../src/app", {
-  "./db": db
-})
+const db = {};
 
-describe("app", () => {
+const app = proxyquire('../src/app', {
+  './db': db
+});
+
+describe('app', () => {
   beforeEach(() => {
-    db.query = () => Promise.resolve()
-  })
+    db.query = () => Promise.resolve();
+  });
 
-  it("should pass params from the url to db.query and render the result", done => {
+  it('should pass params from the url to db.query and render the result', done => {
     db.query = (params) => {
-      expect(params["report_agency"]).to.equal("fake-agency")
-      expect(params["report_name"]).to.equal("fake-report")
-      return Promise.resolve(["row 1", "row 2"])
-    }
+      expect(params.report_agency).to.equal('fake-agency');
+      expect(params.report_name).to.equal('fake-report');
+      return Promise.resolve(['row 1', 'row 2']);
+    };
 
     const dataRequest = request(app)
-      .get("/agencies/fake-agency/reports/fake-report/data")
-      .expect(200)
+      .get('/agencies/fake-agency/reports/fake-report/data')
+      .expect(200);
 
     dataRequest.then(response => {
-      expect(response.body).to.deep.equal(["row 1", "row 2"])
-      done()
-    }).catch(done)
-  })
+      expect(response.body).to.deep.equal(['row 1', 'row 2']);
+      done();
+    }).catch(done);
+  });
 
-  it("should not pass the agency param if the request does not specify and agency", done => {
+  it('should not pass the agency param if the request does not specify and agency', done => {
     db.query = (params) => {
-      expect(params["report_agency"]).to.be.undefined
-      expect(params["report_name"]).to.equal("fake-report")
-      return Promise.resolve(["row 1", "row 2"])
-    }
+      expect(params.report_agency).to.be.undefined;
+      expect(params.report_name).to.equal('fake-report');
+      return Promise.resolve(['row 1', 'row 2']);
+    };
 
     const dataRequest = request(app)
-      .get("/reports/fake-report/data")
-      .expect(200)
+      .get('/reports/fake-report/data')
+      .expect(200);
 
     dataRequest.then(response => {
-      expect(response.body).to.deep.equal(["row 1", "row 2"])
-      done()
-    }).catch(done)
-  })
+      expect(response.body).to.deep.equal(['row 1', 'row 2']);
+      done();
+    }).catch(done);
+  });
 
-  it("should merge the params in the url with query params", done => {
+  it('should merge the params in the url with query params', done => {
     db.query = (params) => {
-      expect(params["report_agency"]).to.equal("fake-agency")
-      expect(params["report_name"]).to.equal("fake-report")
-      expect(params["limit"]).to.equal("50")
-      return Promise.resolve(["row 1", "row 2"])
-    }
+      expect(params.report_agency).to.equal('fake-agency');
+      expect(params.report_name).to.equal('fake-report');
+      expect(params.limit).to.equal('50');
+      return Promise.resolve(['row 1', 'row 2']);
+    };
 
     const dataRequest = request(app)
-      .get("/agencies/fake-agency/reports/fake-report/data?limit=50")
-      .expect(200)
+      .get('/agencies/fake-agency/reports/fake-report/data?limit=50')
+      .expect(200);
 
     dataRequest.then(response => {
-      expect(response.body).to.deep.equal(["row 1", "row 2"])
-      done()
-    }).catch(done)
-  })
+      expect(response.body).to.deep.equal(['row 1', 'row 2']);
+      done();
+    }).catch(done);
+  });
 
-  it("should respond with a 400 if db.query rejects", done => {
-    db.query = (params) => Promise.reject("This is a test of the emergency broadcast system.")
+  it('should respond with a 400 if db.query rejects', done => {
+    db.query = () => Promise.reject('This is a test of the emergency broadcast system.');
 
     const dataRequest = request(app)
-      .get("/agencies/fake-agency/reports/fake-report/data")
-      .expect(400)
+      .get('/agencies/fake-agency/reports/fake-report/data')
+      .expect(400);
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal({
-        message: "An error occured. Please check the application logs.",
-        status: 400,
-      })
-      done()
-    }).catch(done)
-  })
-})
+        message: 'An error occured. Please check the application logs.',
+        status: 400
+      });
+      done();
+    }).catch(done);
+  });
+});

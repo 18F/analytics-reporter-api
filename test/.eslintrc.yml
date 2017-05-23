@@ -1,0 +1,6 @@
+extends:
+- "airbnb/legacy"
+parser: "babel-eslint"
+rules:
+  no-undef: off
+  no-unused-expressions: off
