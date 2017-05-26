@@ -1,10 +1,5 @@
 const knex = require('knex');
-
-const config = {
-  postgres: {
-    database: process.env.TRAVIS ? 'travis_ci_test' : 'analytics-api-test'
-  }
-};
+const config = require('../../src/config');
 
 const client = knex({ client: 'pg', connection: config.postgres });
 

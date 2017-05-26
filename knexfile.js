@@ -24,7 +24,7 @@ module.exports = {
   test: {
     client: 'postgresql',
     connection: {
-      database: process.env.TRAVIS ? 'travis_ci_test' : 'analytics-api-test'
+      database: process.env.CIRCLECI ? 'circle_test' : 'analytics-api-test'
     },
     migrations: {
       tableName: 'knex_migrations'
