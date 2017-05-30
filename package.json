@@ -37,11 +37,11 @@
   },
   "dependencies": {
     "express": "^4.14.1",
-    "knex": "^0.12.7",
+    "express-winston": "^2.4.0",
+    "knex": "^0.13.0",
     "pg": "^6.1.2",
     "sinon": "^2.2.0",
-    "winston": "^2.3.1",
-    "winston-express": "^0.1.1"
+    "winston": "^2.3.1"
   },
   "engines": {
     "node": "6.x.x",
