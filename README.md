@@ -1,3 +1,7 @@
+[![Code Climate](https://codeclimate.com/github/18F/analytics-reporter-api/badges/gpa.svg)](https://codeclimate.com/github/18F/analytics-reporter-api)  [![CircleCI](https://circleci.com/gh/18F/analytics-reporter-api.svg?style=shield)](https://circleci.com/gh/18F/analytics-reporter-api)  [![Dependency Status](https://gemnasium.com/badges/github.com/18F/analytics-reporter-api.svg)](https://gemnasium.com/github.com/18F/analytics-reporter-api)
+
+
+
 # Analytics API
 
 A system for publishing data retrieved from the Google Analytics API by the
