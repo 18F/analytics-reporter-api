@@ -11,6 +11,6 @@ cf api api.fr.cloud.gov
 cf login -u $CF_USERNAME -p $CF_PASSWORD -o gsa-opp-analytics -s analytics-dev
 
 # Push the app
-cf push analytics-api-staging
+cf push analytics-reporter-api
 
 cf logout
