@@ -24,7 +24,8 @@ module.exports = {
   test: {
     client: 'postgresql',
     connection: {
-      database: process.env.CIRCLECI ? 'circle_test' : 'analytics-api-test'
+      user: process.env.CIRCLECI ? 'postgres' : undefined,
+      database: 'analytics-api-test'
     },
     migrations: {
       tableName: 'knex_migrations'
