@@ -19,12 +19,16 @@ const parsePageParam = (pageParam) => {
   return Math.max(1, page);
 };
 
-const query = ({ reportName, reportAgency = null, limit = 1000, page = 1 }) => {
+const query = ({ reportName,
+   reportAgency = null,
+  limit = 1000,
+  page = 1,
+  domain = null }) => {
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
-
+  const recordQuery = { report_name: reportName, report_agency: reportAgency, domain: domain };
   return db('analytics_data')
-    .where({ report_name: reportName, report_agency: reportAgency })
+    .where(recordQuery)
     .orderBy('date', 'desc')
     .orderByRaw('CAST(data->>\'total_events\' AS INTEGER) desc')
     .orderByRaw('CAST(data->>\'visits\' AS INTEGER) desc')

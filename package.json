@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev" : "nodemon src/index.js",
     "postinstall": "npm run migrate",
     "pretest": "NODE_ENV=test npm run migrate",
     "test": "NODE_ENV=test `npm bin`/mocha test/**/*.test.js",
@@ -31,6 +32,7 @@
     "eslint-plugin-mocha": "^4.12.1",
     "eslint-plugin-react": "^7.11.1",
     "mocha": "^5.2.0",
+    "nodemon": "^1.18.7",
     "proxyquire": "^1.7.11",
     "supertest": "^3.3.0",
     "supertest-as-promised": "^4.0.2"
