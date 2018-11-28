@@ -20,17 +20,6 @@ const parsePageParam = (pageParam) => {
   return Math.max(1, page);
 };
 
-const queryDomain = (domain, reportName, limitParam, pageParam) => {
-  return db('analytics_data')
-    .where({ report_name: reportName })
-    .whereRaw('data->> \'domain\' = ?', [domain])
-    .orderBy('date', 'desc')
-    .orderByRaw('CAST(data->>\'total_events\' AS INTEGER) desc')
-    .orderByRaw('CAST(data->>\'visits\' AS INTEGER) desc')
-    .limit(limitParam)
-    .offset((pageParam - 1) * limitParam);
-};
-
 const buildTimeQuery = (before, after) => {
   if (before && after) {
     return ['"date" <= ?::date AND "date" >= ?::date', [before, after]];
@@ -44,6 +33,19 @@ const buildTimeQuery = (before, after) => {
   return [true];
 };
 
+const queryDomain = (domain, reportName, limitParam, pageParam, before, after) => {
+  const timeQuery = buildTimeQuery(before, after);
+  return db('analytics_data')
+    .where({ report_name: reportName })
+    .whereRaw('data->> \'domain\' = ?', [domain])
+    .whereRaw(...timeQuery)
+    .orderBy('date', 'desc')
+    .orderByRaw('CAST(data->>\'total_events\' AS INTEGER) desc')
+    .orderByRaw('CAST(data->>\'visits\' AS INTEGER) desc')
+    .limit(limitParam)
+    .offset((pageParam - 1) * limitParam);
+};
+
 const query = ({ reportName,
    reportAgency = null,
   limit = 1000,
@@ -55,7 +57,7 @@ const query = ({ reportName,
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
   if (domain && reportName !== 'download') {
-    return queryDomain(domain, reportName, limitParam, pageParam);
+    return queryDomain(domain, reportName, limitParam, pageParam, before, after);
   }
   const recordQuery = Object.assign({ report_name: reportName, report_agency: reportAgency });
   const timeQuery = buildTimeQuery(before, after);
