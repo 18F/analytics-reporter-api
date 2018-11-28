@@ -19,15 +19,16 @@ const parsePageParam = (pageParam) => {
   return Math.max(1, page);
 };
 
-const parseDomain = (domain, reportName) => {
-  if (domain) {
-    if (reportName === 'downloads') {
-      return {};
-    }
-    return { domain: domain };
-  }
-  return {};
-};
+const queryDomain = (domain, reportName, limitParam, pageParam) => {
+  return db('analytics_data')
+    .where({ report_name: reportName })
+    .whereRaw('data->> \'domain\' = ?', [domain])
+    .orderBy('date', 'desc')
+    .orderByRaw('CAST(data->>\'total_events\' AS INTEGER) desc')
+    .orderByRaw('CAST(data->>\'visits\' AS INTEGER) desc')
+    .limit(limitParam)
+    .offset((pageParam - 1) * limitParam);
+}
 
 const query = ({ reportName,
    reportAgency = null,
@@ -36,9 +37,10 @@ const query = ({ reportName,
   domain = null }) => {
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
-  const domainFilter = parseDomain(domain, reportName);
-  const recordQuery = Object.assign({ report_name: reportName, report_agency: reportAgency }
-    , domainFilter);
+  if (domain && reportName !== 'download') {
+    return queryDomain(domain, reportName, limitParam, pageParam);
+  }
+  const recordQuery = Object.assign({ report_name: reportName, report_agency: reportAgency });
   return db('analytics_data')
     .where(recordQuery)
     .orderBy('date', 'desc')

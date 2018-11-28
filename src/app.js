@@ -17,7 +17,7 @@ const formatDateForDataPoint = (dataPoint) => {
 const acceptableDomainReports = [
   'site',
   'domain',
-  'downloads',
+  'download',
   'second-level-domain'
 ];
 
@@ -28,14 +28,14 @@ const checkDomainFilter = (req, res) => {
   }
   const tryReportText = acceptableDomainReports.join(', ');
   res.status(400);
-  res.json({
+  return res.json({
     message: `You are requesting a report that cannot be filtered on domain. Please try one of the following reports: ${tryReportText}`,
     status: 400
   });
 };
 
 const filterDownloadResponse = (response, params) => {
-  if (params.domain && params.reportName === 'downloads') {
+  if (params.domain && params.reportName === 'download') {
     return response.filter(entry => entry.page.includes(params.domain));
   }
   return response;
@@ -55,7 +55,7 @@ const fetchData = (req, res) => {
   }).catch(err => {
     logger.error('Unexpected Error:', err);
     res.status(400);
-    res.json({
+    return res.json({
       message: 'An error occurred. Please check the application logs.',
       status: 400
     });
