@@ -19,6 +19,16 @@ const parsePageParam = (pageParam) => {
   return Math.max(1, page);
 };
 
+const parseDomain = (domain, reportName) => {
+  if (domain) {
+    if (reportName === 'downloads') {
+      return {};
+    }
+    return { domain: domain };
+  }
+  return {};
+};
+
 const query = ({ reportName,
    reportAgency = null,
   limit = 1000,
@@ -26,7 +36,9 @@ const query = ({ reportName,
   domain = null }) => {
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
-  const recordQuery = { report_name: reportName, report_agency: reportAgency, domain: domain };
+  const domainFilter = parseDomain(domain, reportName);
+  const recordQuery = Object.assign({ report_name: reportName, report_agency: reportAgency }
+    , domainFilter);
   return db('analytics_data')
     .where(recordQuery)
     .orderBy('date', 'desc')
