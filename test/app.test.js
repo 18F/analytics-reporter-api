@@ -28,7 +28,7 @@ describe('app', () => {
     };
 
     const dataRequest = request(app)
-      .get('/v1/agencies/fake-agency/reports/fake-report/data')
+      .get('/v1.1/agencies/fake-agency/reports/fake-report/data')
       .expect(200);
 
     dataRequest.then(response => {
@@ -51,7 +51,7 @@ describe('app', () => {
     };
 
     const dataRequest = request(app)
-      .get('/v1/reports/fake-report/data')
+      .get('/v1.1/reports/fake-report/data')
       .expect(200);
 
     dataRequest.then(response => {
@@ -75,7 +75,7 @@ describe('app', () => {
     };
 
     const dataRequest = request(app)
-      .get('/v1/agencies/fake-agency/reports/fake-report/data?limit=50')
+      .get('/v1.1/agencies/fake-agency/reports/fake-report/data?limit=50')
       .expect(200);
 
     dataRequest.then(response => {
@@ -91,12 +91,12 @@ describe('app', () => {
     db.query = () => Promise.reject('This is a test of the emergency broadcast system.');
 
     const dataRequest = request(app)
-      .get('/v1/agencies/fake-agency/reports/fake-report/data')
+      .get('/v1.1/agencies/fake-agency/reports/fake-report/data')
       .expect(400);
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal({
-        message: 'An error occured. Please check the application logs.',
+        message: 'An error occurred. Please check the application logs.',
         status: 400
       });
       done();

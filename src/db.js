@@ -72,4 +72,4 @@ const query = ({ reportName,
     .offset((pageParam - 1) * limitParam);
 };
 
-module.exports = { query };
+module.exports = { query, queryDomain, buildTimeQuery };
