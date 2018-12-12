@@ -145,7 +145,7 @@ describe('db', () => {
       expect(result).to.deep.equal(['"date" >= ?::date', ['2018-11-22']]);
     });
   });
-  describe.only('.queryDomain(params)', ()=>{
+  describe('.queryDomain(params)', ()=>{
     it('should only return 2 results that include site reports from the test.gov domain', done => {
       databaseSupport.client('analytics_data').insert(
         [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },

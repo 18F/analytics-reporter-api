@@ -29,7 +29,7 @@ const checkDomainFilter = (req, res) => {
   const tryReportText = acceptableDomainReports.join(', ');
   res.status(400);
   return res.json({
-    message: `You are requesting a report that cannot be filtered on domain. Please try one of the following reports: ${tryReportText}`,
+    message: `You are requesting a report that cannot be filtered on domain. Please try one of the following reports: ${tryReportText}.`,
     status: 400
   });
 };
