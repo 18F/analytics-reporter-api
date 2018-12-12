@@ -1,4 +1,4 @@
-// const Cron = require('cron');
+const Cron = require('cron');
 const knex = require('knex');
 const moment = require('moment');
 const config = require('./config');
@@ -15,5 +15,13 @@ const deleteOldEntries = (monthsAgo) => {
       .then(res => logger.info(`Deleted ${res} records as part of monthly historical data cleanup`));
 };
 
-module.exports = deleteOldEntries;
+// schedule tasks to be run on the server
+
+module.exports = (monthsAgo) => {
+  return new Cron.CronJob('0 0 12 1 1/1 ? *', () => {
+    console.log('---------------------');
+    console.log('Running Cron Job');
+    deleteOldEntries(monthsAgo);
+  });
+};
 

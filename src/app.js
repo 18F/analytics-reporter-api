@@ -20,7 +20,7 @@ app.get('/v1.1/domain/:domain/reports/:reportName/data', controllers.checkDomain
 app.get('/v1.1/agencies/:reportAgency/reports/:reportName/data', controllers.fetchData);
 app.get('/v1.1/reports/:reportName/data', controllers.fetchData);
 
-// Delete historical data older than 18months ago
-cronDrivenDeletionOfOldEntries(18);
+// Delete historical data older than 18 months ago
+cronDrivenDeletionOfOldEntries(18).start();
 
 module.exports = app;
