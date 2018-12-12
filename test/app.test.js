@@ -141,7 +141,7 @@ describe('app', () => {
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal([
-        { id: 1, date: '2017-01-01', domain: 'fakeiscool.gov' }
+        { id: 1, date: '2017-01-01', report_name: 'site', domain: 'fakeiscool.gov' }
       ]);
       done();
     }).catch(done);
