@@ -16,12 +16,13 @@ const deleteOldEntries = (monthsAgo) => {
 };
 
 // schedule tasks to be run on the server
-
-module.exports = (monthsAgo) => {
+const cronJob = (monthsAgo) => {
   return new Cron.CronJob('0 0 12 1 1/1 ? *', () => {
     console.log('---------------------');
     console.log('Running Cron Job');
     deleteOldEntries(monthsAgo);
   });
 };
+
+module.exports = { deleteOldEntries, cronJob };
 

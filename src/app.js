@@ -21,6 +21,6 @@ app.get('/v1.1/agencies/:reportAgency/reports/:reportName/data', controllers.fet
 app.get('/v1.1/reports/:reportName/data', controllers.fetchData);
 
 // Delete historical data older than 18 months ago
-cronDrivenDeletionOfOldEntries(18).start();
+cronDrivenDeletionOfOldEntries.cronJob(18).start();
 
 module.exports = app;
