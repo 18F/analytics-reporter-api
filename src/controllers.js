@@ -1,4 +1,5 @@
 const db = require('./db');
+const logger = require('./logger');
 
 const formatDateForDataPoint = (dataPoint) => {
   if (dataPoint.date) {
