@@ -4,7 +4,7 @@ logger.level = 'error';
 
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
-const request = require('supertest-as-promised');
+const request = require('supertest');
 
 const db = {};
 

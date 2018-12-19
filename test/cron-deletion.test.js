@@ -1,12 +1,7 @@
 const expect = require('chai').expect;
 const moment = require('moment');
-const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 const databaseSupport = require('./support/db');
-
-const db = proxyquire('../src/db', {
-  './config': databaseSupport.config
-});
 
 const cronDeletion = require('../src/cron-deletion');
 
