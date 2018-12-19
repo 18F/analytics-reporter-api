@@ -45,10 +45,11 @@ option.
 
 # Using the API
 
-The Analytics API exposes 2 API endpoints:
+The Analytics API exposes 3 API endpoints:
 
 - `/reports/:report_name/data`
-- `/agencies/:agency_name/reports/:report_name/data`
+- `/agencies/:agency_name/reports/:reportName/data`
+- `/domain/:domain/reports/:reportName/data`
 
 Each endpoint renders a JSON array with the most recent 1000 records the
 Analytics Reporter has generated for the given agency and report. If no records

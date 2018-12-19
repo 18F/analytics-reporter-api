@@ -126,4 +126,155 @@ describe('db', () => {
       .catch(done);
     });
   });
+
+  describe('.buildTimeQuery(before, after)', ()=> {
+    it('should return an array containing true if no date params are present', ()=>{
+      const result = db.buildTimeQuery(null, null);
+      expect(result).to.deep.equal([true]);
+    });
+    it('should return a nested array a raw query string and an array of the dates if both a params are set', () => {
+      const result = db.buildTimeQuery('2018-11-20', '2018-12-20');
+      expect(result).to.deep.equal(['"date" <= ?::date AND "date" >= ?::date', ['2018-11-20', '2018-12-20']]);
+    });
+    it('should return a nested array a raw query string and an array of the before if before is set', () => {
+      const result = db.buildTimeQuery('2018-11-20', null);
+      expect(result).to.deep.equal(['"date" <= ?::date', ['2018-11-20']]);
+    });
+    it('should return a nested array a raw query string and an array of the after if after is set', () => {
+      const result = db.buildTimeQuery(null, '2018-11-22');
+      expect(result).to.deep.equal(['"date" >= ?::date', ['2018-11-22']]);
+    });
+  });
+  describe('.queryDomain(params)', ()=>{
+    it('should only return 2 results that include site reports from the test.gov domain', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-03', data: { domain: 'test.gov' } }]
+        ).then(() => {
+          return db.queryDomain('test.gov', 'site', 2, 1, null, null);
+        }).then(results => {
+          expect(results).to.have.length(2);
+          done();
+        })
+        .catch(err => {
+          done(err);
+        });
+    });
+    it('should only return 2 results that include site reports from the test.gov domain, when multiple reports', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'report', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-03', data: { domain: 'test.gov' } }]
+      ).then(() => {
+        return db.queryDomain('test.gov', 'site', 1000, 1, null, null);
+      }).then(results => {
+        expect(results).to.have.length(2);
+        expect(results[0].report_name).to.equal('site');
+        expect(results[0].data.domain).to.equal('test.gov');
+        done();
+      })
+        .catch(err => {
+          done(err);
+        });
+    });
+    it('should only return 2 results that include site reports from the test.gov domain, when multiple domains', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-03', data: { domain: 'usda.gov' } }]
+      ).then(() => {
+        return db.queryDomain('test.gov', 'site', 1000, 1, null, null);
+      }).then(results => {
+        expect(results).to.have.length(2);
+        expect(results[0].report_name).to.equal('site');
+        expect(results[0].data.domain).to.equal('test.gov');
+        done();
+      })
+        .catch(err => {
+          done(err);
+        });
+    });
+
+    it('should only return 2 results that include site reports from the test.gov domain, when before date parameters are in', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
+      ).then(() => {
+        return db.queryDomain('test.gov', 'site', 1000, 1, '2017-10-20', null);
+      }).then(results => {
+        expect(results).to.have.length(2);
+        expect(results[0].report_name).to.equal('site');
+        expect(results[0].data.domain).to.equal('test.gov');
+        expect(results[0].date.toISOString()).to.match(/^2017-01-02/);
+        done();
+      })
+        .catch(err => {
+          done(err);
+        });
+    });
+    it('should only return 1 result that include site reports from the test.gov domain, when after date parameters are in', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
+      ).then(() => {
+        return db.queryDomain('test.gov', 'site', 1000, 1, null, '2017-10-20');
+      }).then(results => {
+        expect(results).to.have.length(1);
+        expect(results[0].report_name).to.equal('site');
+        expect(results[0].data.domain).to.equal('test.gov');
+        expect(results[0].date.toISOString()).to.match(/^2018-01-03/);
+        done();
+      })
+        .catch(err => {
+          done(err);
+        });
+    });
+    it('should only return 2 result that include site reports from the test.gov domain, when after/before date parameters set', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-11-04', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-11-03', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
+      ).then(() => {
+        return db.queryDomain('test.gov', 'site', 1000, 1, '2018-01-02', '2017-10-20');
+      }).then(results => {
+        expect(results).to.have.length(2);
+        expect(results[0].report_name).to.equal('site');
+        expect(results[0].data.domain).to.equal('test.gov');
+        expect(results[0].date.toISOString()).to.match(/^2017-11-04/);
+        done();
+      })
+        .catch(err => {
+          done(err);
+        });
+    });
+    it('should only return 2 result that include site reports from the test.gov domain, when after/before date parameters set', done => {
+      databaseSupport.client('analytics_data').insert(
+        [{ report_name: 'site', date: '2017-01-02', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'test.gov' } },
+          { report_name: 'report', date: '2018-01-03', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2017-11-03', data: { domain: 'test.gov' } },
+          { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
+      ).then(() => {
+        return db.queryDomain('test.gov', 'site', 1000, 1, '2018-01-04', '2017-10-20');
+      }).then(results => {
+        expect(results).to.have.length(2);
+        expect(results[0].report_name).to.equal('site');
+        expect(results[0].data.domain).to.equal('test.gov');
+        expect(results[0].date.toISOString()).to.match(/^2018-01-03/);
+        done();
+      })
+        .catch(err => {
+          done(err);
+        });
+    });
+  });
 });
