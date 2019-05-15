@@ -6,3 +6,4 @@ instances: 2
 command: npm start
 services:
 - analytics-reporter-database
+stack: cflinuxfs3
