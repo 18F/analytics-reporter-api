@@ -46,7 +46,7 @@
     "winston": "^2.4.4"
   },
   "engines": {
-    "node": "6.x.x",
-    "npm": "3.x.x"
+    "node": "12.x.x",
+    "npm": "6.x.x"
   }
 }
