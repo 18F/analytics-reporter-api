@@ -1,13 +1,24 @@
 const expressWinston = require('express-winston');
-const winston = require('winston');
+const logger = require('winston');
 const config = require('./config');
 
-const logger = expressWinston.logger({
-  transports: [
-    new winston.transports.Console()
-  ],
-  expressFormat: true,
-  colorize: true,
-});
+logger.level = config.log_level;
+logger.remove(logger.transports.Console);
+logger.add(logger.transports.Console, { colorize: true });
+
+logger.middleware = (req, res, next) => {
+  const requestLogger = expressWinston.logger({
+    transports: [
+      new logger.transports.Console({ colorize: true })
+    ],
+    requestWhitelist: expressWinston.requestWhitelist.concat('body')
+  });
+
+  if (logger.levels[logger.level] >= 2) {
+    requestLogger(req, res, next);
+  } else {
+    next();
+  }
+};
 
 module.exports = logger;

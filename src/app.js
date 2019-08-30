@@ -4,10 +4,7 @@ const db = require('./db');
 const logger = require('./logger');
 
 const app = express();
-
-if (process.env.NODE_ENV != 'test') {
-  app.use(logger);
-}
+app.use(logger.middleware);
 app.use(apiDataGovFilter);
 
 const formatDateForDataPoint = (dataPoint) => {
@@ -56,7 +53,7 @@ const fetchData = (req, res) => {
     const filteredResponse = filterDownloadResponse(response, params);
     res.json(filteredResponse);
   }).catch(err => {
-    console.error('Unexpected Error:', err);
+    logger.error('Unexpected Error:', err);
     res.status(400);
     return res.json({
       message: 'An error occurred. Please check the application logs.',
