@@ -1,4 +1,3 @@
 root: true
 extends:
 - "airbnb/legacy"
-parser: "babel-eslint"
