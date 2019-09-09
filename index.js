@@ -3,5 +3,5 @@ const config = require('./src/config');
 const logger = require('./src/logger');
 
 app.listen(config.port, () => {
-  logger.info(`Listening on ${config.port}`);
+  console.log(`Listening on ${config.port}`);
 });
