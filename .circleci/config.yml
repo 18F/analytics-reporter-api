@@ -28,6 +28,6 @@ jobs:
       - run:
           name: deploy site
           command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            if [ "${CIRCLE_BRANCH}" == "jmhooper-zdt-deploys" ]; then
               bin/deploy-ci.sh
             fi
