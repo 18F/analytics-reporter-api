@@ -39,7 +39,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-winston": "^3.3.0",
-    "knex": "^0.19.2",
+    "knex": "^0.19.5",
     "lodash": ">= 4.17.13",
     "pg": "^6.4.2",
     "sinon": "^7.4.1",
