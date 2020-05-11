@@ -30,7 +30,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-react": "^7.11.1",
     "extend": ">= 3.0.2",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.2",
     "nodemon": "^1.19.1",
     "proxyquire": "^1.7.11",
     "supertest": "^4.0.2",
