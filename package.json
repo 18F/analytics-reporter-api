@@ -45,6 +45,9 @@
     "sinon": "^9.0.2",
     "winston": "^3.0.0"
   },
+  "optionalDependencies": {
+    "newrelic": "^1.36.1"
+  },
   "engines": {
     "node": "10.x.x",
     "npm": "6.x.x"
