@@ -46,7 +46,7 @@
     "winston": "^3.3.3"
   },
   "optionalDependencies": {
-    "newrelic": "^1.36.1"
+    "newrelic": "^7.5.0"
   },
   "engines": {
     "node": "10.x.x",
