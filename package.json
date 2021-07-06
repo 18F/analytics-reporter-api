@@ -10,7 +10,9 @@
     "pretest": "NODE_ENV=test npm run migrate",
     "test": "NODE_ENV=test `npm bin`/mocha test/**/*.test.js --exit",
     "migrate": "`npm bin`/knex migrate:latest",
-    "lint": "`npm bin`/eslint src/**.js test/**.js *.js"
+    "lint": "`npm bin`/eslint src/**.js test/**.js *.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -43,7 +45,8 @@
     "lodash": ">= 4.17.21",
     "pg": "^8.6.0",
     "sinon": "^9.0.2",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "snyk": "^1.653.0"
   },
   "optionalDependencies": {
     "newrelic": "^1.36.1"
@@ -51,5 +54,6 @@
   "engines": {
     "node": "10.x.x",
     "npm": "6.x.x"
-  }
+  },
+  "snyk": true
 }
