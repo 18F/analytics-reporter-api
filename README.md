@@ -97,6 +97,41 @@ migrates the database.
 npm test
 ```
 
+# Creating a new database migration
+If you need to migrate the database, you can create a new migration via `knex`, which will create the migration file for you based in part on the migration name you provide. From the root of this repo, run:
+```
+`npm bin`/knex migrate:make <the name of your migration>
+```
+
+See [knex documentation](https://knexjs.org/#Installation-migrations) for more details.
+
+# Running database migrations
+## Locally
+`npm run migrate`
+## In production
+In production, you can run database migrations via `cf run-task`. As with anything in production, be careful when doing this! First, try checking the current status of migrations using the `migrate:status` command
+```
+cf run-task analytics-reporter-api "knex migrate:status" --name check_migration_status
+```
+This will kick off a task - you can see the output by running:
+```
+cf logs analytics-reporter-api --recent
+# the output will look something like...
+2021-07-19T14:31:39.89-0400 [APP/TASK/check_migration_status/0] OUT Using environment: production
+2021-07-19T14:31:40.16-0400 [APP/TASK/check_migration_status/0] OUT Found 3 Completed Migration file/files.
+2021-07-19T14:31:40.16-0400 [APP/TASK/check_migration_status/0] OUT 20170308164751_create_analytics_data.js
+2021-07-19T14:31:40.16-0400 [APP/TASK/check_migration_status/0] OUT 20170316115145_add_analytics_data_indexes.js
+2021-07-19T14:31:40.16-0400 [APP/TASK/check_migration_status/0] OUT 20170522094056_rename_date_time_to_date.js
+2021-07-19T14:31:40.16-0400 [APP/TASK/check_migration_status/0] OUT No Pending Migration files Found.
+2021-07-19T14:31:40.17-0400 [APP/TASK/check_migration_status/0] OUT Exit status 0
+```
+
+To actually run the migration, you would run:
+```
+cf run-task analytics-reporter-api "knex migrate:latest" --name run_db_migrations
+```
+
+See [knex documentation](https://knexjs.org/#Installation-migrations) for more details and options on the `migrate` command.
 ### Public domain
 
 This project is in the worldwide [public domain](LICENSE.md). As stated in
