@@ -8,9 +8,9 @@
     "dev": "nodemon src/index.js",
     "postinstall": "",
     "pretest": "NODE_ENV=test npm run migrate",
-    "test": "NODE_ENV=test `npm bin`/mocha test/**/*.test.js --exit",
-    "migrate": "`npm bin`/knex migrate:latest",
-    "lint": "`npm bin`/eslint src/**.js test/**.js *.js",
+    "test": "NODE_ENV=test mocha test/**/*.test.js --exit",
+    "migrate": "knex migrate:latest",
+    "lint": "eslint src/**.js test/**.js *.js",
     "snyk-protect": "snyk-protect",
     "prepare": "npm run snyk-protect"
   },
