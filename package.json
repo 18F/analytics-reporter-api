@@ -8,8 +8,8 @@
     "dev": "nodemon src/index.js",
     "postinstall": "npm run migrate",
     "pretest": "NODE_ENV=test npm run migrate",
-    "test": "NODE_ENV=test `npm bin`/mocha test/**/*.test.js --exit",
-    "migrate": "`npm bin`/knex migrate:latest",
+    "test": "NODE_ENV=test mocha test/**/*.test.js --exit",
+    "migrate": "knex migrate:latest",
     "lint": "`npm bin`/eslint src/**.js test/**.js *.js"
   },
   "repository": {
@@ -39,7 +39,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-winston": "^4.1.0",
-    "knex": "^0.95.4",
+    "knex": "^2.4.2",
     "lodash": ">= 4.17.21",
     "pg": "^8.6.0",
     "sinon": "^9.0.2",
