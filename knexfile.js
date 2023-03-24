@@ -9,7 +9,7 @@ module.exports = {
     }
   },
   production: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       host: process.env.POSTGRES_HOST,
       user: process.env.POSTGRES_USER,
@@ -25,7 +25,7 @@ module.exports = {
     }
   },
   test: {
-    client: 'postgresql',
+    client: 'pg',
     connection: {
       user: process.env.CIRCLECI ? 'postgres' : undefined,
       database: 'analytics-api-test'

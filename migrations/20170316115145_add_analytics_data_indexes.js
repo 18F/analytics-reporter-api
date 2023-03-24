@@ -1,3 +1,7 @@
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
 exports.up = function(knex) {
   return knex.schema.table("analytics_data", table => {
     table.index(["report_name", "report_agency"])
