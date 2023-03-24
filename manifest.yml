@@ -4,7 +4,7 @@ name: analytics-api
 # Support for those versions was removed in v1.7.53 of the buildpack:
 # https://github.com/cloudfoundry/nodejs-buildpack/releases/tag/v1.7.53
 # TODO - update the app to use a newer (still supported) version of Node
-buildpack: https://github.com/cloudfoundry/nodejs-buildpack#v1.7.52
+buildpack: https://github.com/cloudfoundry/nodejs-buildpack
 memory: 128M
 instances: 2
 command: npm start
