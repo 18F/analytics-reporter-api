@@ -1,6 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable("analytics_data", table => {
-    table.increments("id")
+    table.increments("id").primary()
     table.string("report_name")
     table.string("report_agency")
     table.dateTime("date_time")
