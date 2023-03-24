@@ -111,7 +111,7 @@ See [knex documentation](https://knexjs.org/#Installation-migrations) for more d
 ## In production
 In production, you can run database migrations via `cf run-task`. As with anything in production, be careful when doing this! First, try checking the current status of migrations using the `migrate:status` command
 ```
-cf run-task analytics-reporter-api "knex migrate:status" --name check_migration_status
+cf run-task analytics-reporter-api --command "knex migrate:status" --name check_migration_status
 ```
 This will kick off a task - you can see the output by running:
 ```
@@ -128,7 +128,7 @@ cf logs analytics-reporter-api --recent
 
 To actually run the migration, you would run:
 ```
-cf run-task analytics-reporter-api "knex migrate:latest" --name run_db_migrations
+cf run-task analytics-reporter-api --command "knex migrate:latest" --name run_db_migrations
 ```
 
 See [knex documentation](https://knexjs.org/#Installation-migrations) for more details and options on the `migrate` command.
