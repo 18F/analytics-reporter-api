@@ -43,7 +43,7 @@
     "lodash": ">= 4.17.21",
     "pg": "^8.6.0",
     "sinon": "^15.0.2",
-    "winston": "^3.3.3"
+    "winston": "^3.10.0"
   },
   "optionalDependencies": {
     "newrelic": "^9.14.1"
