@@ -35,7 +35,7 @@ jobs:
           command: |
               sed -i 's@name: analytics-reporter-api@name: analytics-reporter-api-develop@g' manifest.yml
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-develop@g' manifest.yml
-      
+              cat manifest.yml      
       - run:
           name: Run sed on entrypoint.sh when deploying to develop
           command: |
