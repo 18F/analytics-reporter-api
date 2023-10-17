@@ -39,7 +39,6 @@ jobs:
       - run:
           name: Run sed on entrypoint.sh when deploying to develop
           command: |
-              sed -i 's@  - name: analytics-reporter-api@  - name: analytics-reporter-api-develop@g' entrypoint.sh
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api@NEW_RELIC_APP_NAME="analytics-reporter-api-develop"@g"' entrypoint.sh
 
       - run:   
