@@ -53,6 +53,9 @@ jobs:
               # Log into cloud.gov
               cf api api.fr.cloud.gov
               cf login -u $CF_USERNAME_DEV -p $CF_PASSWORD_DEV -o gsa-opp-analytics -s analytics-dev
+              pwd
+              ls -l
+              cat manifest.yml
               cf push -f "./manifest.yml"
               cf logout
 
