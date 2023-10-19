@@ -66,7 +66,7 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - develop _deploy
 
   # staging:
     # jobs: 
