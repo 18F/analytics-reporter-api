@@ -1,3 +1,6 @@
+
+const VCAP_SERVICES_JSON = JSON.parse(process.env.VCAP_SERVICES);
+
 module.exports = {
   development: {
     client: 'postgresql',
