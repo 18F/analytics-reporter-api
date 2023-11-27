@@ -35,16 +35,22 @@ jobs:
           command: |
               sed -i 's@name: analytics-reporter-api@name: analytics-reporter-api-develop@g' manifest.yml
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-develop@g' manifest.yml
-              cat manifest.yml      
       - run:
           name: Run sed on entrypoint.sh when deploying to develop
           command: |
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-develop"@g' entrypoint.sh
 
+      - run:
+          name: Delete Knewfile.js and drop sufffix on Knexfile.js.cloudgov
+          command: |
+              rm knexfile.js
+              mv knexfile.js.cloudgov knexfile.js
+
       - run:   
           name: Install CF CLI
           command: |
-            sudo wget --user-agent "Mozilla" -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | sudo apt-key add - && sudo echo "deb https://packages.cloudfoundry.org/debian stable main" | sudo tee /etc/apt/sources.list.d/cloudfoundry-cli.list && sudo apt-get update && sudo apt-get -y install cf8-cli curl 
+              sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
+              sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
       
       - run:
           name: deploy
@@ -53,8 +59,6 @@ jobs:
               # Log into cloud.gov
               cf api api.fr.cloud.gov
               cf login -u $CF_USERNAME_DEV -p $CF_PASSWORD_DEV -o gsa-opp-analytics -s analytics-dev
-              pwd
-              ls -l
               cat manifest.yml
               cf push -f "./manifest.yml"
               cf logout

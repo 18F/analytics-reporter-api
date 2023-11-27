@@ -1,10 +1,10 @@
----
 applications:
-  - name: analytics-reporter-api
-    buildpack: https://github.com/cloudfoundry/nodejs-buildpack
-    memory: 128M
-    instances: 2
-    command: "chmod +x ./entrypoint.sh && ./entrypoint.sh && npm start"
-    services:
-    - analytics-reporter-database
-    stack: cflinuxfs4
+- name: analytics-reporter-api
+  instances: 1
+  memory: 128M
+  buildpacks:
+      - nodejs_buildpack
+  command: "chmod +x ./entrypoint.sh && ./entrypoint.sh"
+  services:
+  - analytics-reporter-database
+  stack: cflinuxfs4
