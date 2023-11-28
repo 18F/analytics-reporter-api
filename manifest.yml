@@ -8,3 +8,10 @@ applications:
   services:
   - analytics-reporter-database
   stack: cflinuxfs4
+  env:
+    API_DATA_GOV_SECRET: ${API_DATA_GOV_SECRET}
+    NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
+    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+    NODE_ENV: production 
+
+

@@ -35,13 +35,16 @@ jobs:
           command: |
               sed -i 's@name: analytics-reporter-api@name: analytics-reporter-api-develop@g' manifest.yml
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-develop@g' manifest.yml
+              mv manifest.yml manifest.yml.src
+              envsubst < manifest.yml.src > manifest.yml
+
       - run:
           name: Run sed on entrypoint.sh when deploying to develop
           command: |
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-develop"@g' entrypoint.sh
 
       - run:
-          name: Delete Knewfile.js and drop sufffix on Knexfile.js.cloudgov
+          name: Delete Knexfile.js and drop sufffix on Knexfile.js.cloudgov
           command: |
               rm knexfile.js
               mv knexfile.js.cloudgov knexfile.js
