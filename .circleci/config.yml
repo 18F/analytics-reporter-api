@@ -33,6 +33,8 @@ jobs:
       - run:
           name: Replace Data URL in manifest.yml file when deploying to develop
           command: |
+              sudo apt-get update
+              sudo apt-get install gettext
               sed -i 's@name: analytics-reporter-api@name: analytics-reporter-api-develop@g' manifest.yml
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-develop@g' manifest.yml
               mv manifest.yml manifest.yml.src
