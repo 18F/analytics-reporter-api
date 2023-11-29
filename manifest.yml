@@ -13,5 +13,5 @@ applications:
     NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
     NODE_ENV: production 
-
+    PGSSLMODE: true 
 
