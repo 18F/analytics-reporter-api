@@ -154,7 +154,8 @@ workflows:
           filters:
             branches:
               only:
-                - staging
+              - stage
+
                   
   # main_workflow:
   #   jobs: 
