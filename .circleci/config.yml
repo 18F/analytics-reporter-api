@@ -70,7 +70,7 @@ jobs:
               cf restage analytics-reporter-api-develop
               cf logout
 
-  staging_deploy_deploy:
+  staging_deploy:
     docker:
       - image: cimg/node:16.19.1-browsers
         environment:
