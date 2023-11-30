@@ -5,24 +5,26 @@
 # Analytics API
 
 A system for publishing data retrieved from the Google Analytics API by the
-[Analytics Reporter](https://github.com/18F/analytics-reporter). The analytics
-API serves data written to a Progress database by the Analytics Reporter in
-response to HTTP requests.
+[Analytics Reporter](https://github.com/18F/analytics-reporter).
+This Analytics API serves data written to a PostgreSQL database by the Analytics Reporter,
+in response to HTTP requests.
 
 # Setup
 
-The Analytics API maintains the schema for the database that the Analytics
-Reporter writes to. Because of this, the Analytics API must be setup and
+This Analytics API maintains the schema for the database that the
+[Analytics Reporter](https://github.com/18F/analytics-reporter)
+writes to.
+Thus, the Analytics API must be setup and
 configured before the Analytics Reporter starts writing data.
 
-First, the database needs to be created:
+First, create the database:
 
 ```shell
 createdb analytics-reporter
 ```
 
-Once the database is created, the app can be cloned and the dependencies can be
-installed via NPM. The install script has a postinstall hook that will migrate
+Once the database is created, clone the app and install the dependencies via NPM.
+The install script has a postinstall hook that will migrate
 the database.
 
 ```shell
@@ -31,17 +33,17 @@ cd analytics-reporter-api
 npm install
 ```
 
-Once all of the dependencies are installed, the app can be started.
+Once the dependencies are installed, the app can be started.
 
 ```shell
 npm start
 ```
 
-The API is not available at `http://localhost:4444/`
+The API should now be available at `http://localhost:4444/`
 
-Note that the API will not render any data until Analytics Reporter is
-configured to write to the same database and run with the `--write-to-database`
-option.
+Note that the API will not render any data until
+[Analytics Reporter](https://github.com/18F/analytics-reporter)
+is configured to write to the same database and run with the `--write-to-database` option.
 
 # Using the API
 
@@ -106,14 +108,21 @@ If you need to migrate the database, you can create a new migration via `knex`, 
 See [knex documentation](https://knexjs.org/#Installation-migrations) for more details.
 
 # Running database migrations
+
 ## Locally
+
 `npm run migrate`
+
 ## In production
+
 In production, you can run database migrations via `cf run-task`. As with anything in production, be careful when doing this! First, try checking the current status of migrations using the `migrate:status` command
+
 ```
 cf run-task analytics-reporter-api --command "knex migrate:status" --name check_migration_status
 ```
+
 This will kick off a task - you can see the output by running:
+
 ```
 cf logs analytics-reporter-api --recent
 # the output will look something like...
@@ -127,6 +136,7 @@ cf logs analytics-reporter-api --recent
 ```
 
 To actually run the migration, you would run:
+
 ```
 cf run-task analytics-reporter-api --command "knex migrate:latest" --name run_db_migrations
 ```
