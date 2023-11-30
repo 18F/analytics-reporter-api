@@ -106,7 +106,7 @@ jobs:
               sudo apt-get update
               sudo apt-get install gettext
               sed -i 's@name: analytics-reporter-api@name: analytics-reporter-api-staging@g' manifest.yml
-              sed -i 's@- analytics-reporter-database@- analytics-reporter-database-staging
+              sed -i 's@- analytics-reporter-database@- analytics-reporter-database-staging@g' manifest.yml
               mv manifest.yml manifest.yml.src
               envsubst < manifest.yml.src > manifest.yml
 
