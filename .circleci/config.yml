@@ -66,6 +66,8 @@ jobs:
               cf login -u $CF_USERNAME_DEV -p $CF_PASSWORD_DEV -o gsa-opp-analytics -s analytics-dev
               cat manifest.yml
               cf push -f "./manifest.yml"
+              cf set-env analytics-reporter-api-develop API_DATA_GOV_SECRET "$API_SECRET"
+              cf restage analytics-reporter-api-develop
               cf logout
 
 workflows:
