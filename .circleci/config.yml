@@ -50,7 +50,8 @@ jobs:
           command: |
               rm ./src/config.js
               mv ./src/config.js.cloudgov ./src/config.js
-    
+              rm knexfile.js
+              mv knexfile.js.cloudgov knexfile.js 
 
       - run:   
           name: Install CF CLI
