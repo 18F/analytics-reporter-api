@@ -1,4 +1,5 @@
 const knexfile = require('../knexfile');
+const VCAP_SERVICES_JSON = JSON.parse(process.env.VCAP_SERVICES);
 
 module.exports = {
   api_data_gov_secret: process.env.API_DATA_GOV_SECRET,
