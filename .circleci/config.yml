@@ -46,10 +46,12 @@ jobs:
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-develop"@g' entrypoint.sh
 
       - run:
-          name: Delete Knexfile.js and drop sufffix on Knexfile.js.cloudgov
+          name: Delete Config.js and drop sufffix on Config.js.cloudgov
           command: |
+              rm ./src/config.js
+              mv ./src/config.js.cloudgov ./src/config.js
               rm knexfile.js
-              mv knexfile.js.cloudgov knexfile.js
+              mv knexfile.js.cloudgov knexfile.js 
 
       - run:   
           name: Install CF CLI
