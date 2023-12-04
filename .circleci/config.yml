@@ -143,6 +143,79 @@ jobs:
               cf set-env analytics-reporter-api-staging API_DATA_GOV_SECRET "$API_SECRET"
               cf restage analytics-reporter-api-staging
               cf logout
+
+  main_deploy:
+    docker:
+      - image: cimg/node:16.19.1-browsers
+        environment:
+          POSTGRES_USER: postgres
+          NODE_ENV: test
+      - image: circleci/postgres:9.5-alpine
+        environment:
+          POSTGRES_DB: analytics-api-test
+    steps:
+      - checkout
+      
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      
+      - run:
+          name: install dependencies
+          command: npm install
+      
+      - save_cache:
+          paths:
+            - ./node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+      
+      - run:
+           name: run tests
+           command: npm test
+       
+      - run:
+          name: Replace Data URL in manifest.yml file when deploying to production
+          command: |
+              sudo apt-get update
+              sudo apt-get install gettext
+              sed -i 's@name: analytics-reporter-api@name: analytics-reporter-api-production@g' manifest.yml
+              sed -i 's@- analytics-reporter-database@- analytics-reporter-database-production@g' manifest.yml
+              mv manifest.yml manifest.yml.src
+              envsubst < manifest.yml.src > manifest.yml
+
+      - run:
+          name: Run sed on entrypoint.sh when deploying to main
+          command: |
+              sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-production"@g' entrypoint.sh
+
+      - run:
+          name: Delete Knexfile.js and drop sufffix on Knexfile.js.cloudgov
+          command: |
+              rm knexfile.js
+              mv knexfile.js.cloudgov knexfile.js
+              rm ./src/config.js
+              mv ./src/config.js.cloudgov ./src/config.js
+
+      - run:   
+          name: Install CF CLI
+          command: |
+              sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
+              sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
+      
+      - run:
+          name: deploy
+          command: |
+              set -e
+              # Log into cloud.gov
+              cf api api.fr.cloud.gov
+              cf login -u $CF_PRODUCTION_SPACE_DEPLOYER_USERNAME -p $CF_PRODUCTION_SPACE_DEPLOYER_PASSWORD -o gsa-opp-analytics -s analytics-prod
+              cat manifest.yml
+              cf push -f "./manifest.yml"
+              cf set-env analytics-reporter-api-production API_DATA_GOV_SECRET "$API_SECRET"
+              cf restage analytics-reporter-api-production
+              cf logout
+
 workflows:
   develop_workflow:
     jobs: 
@@ -150,7 +223,7 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+              - develop
 
   staging:
     jobs: 
@@ -160,12 +233,11 @@ workflows:
               only:
               - stage
 
-                  
-  # main_workflow:
-  #   jobs: 
-  #     - main_deploy:
-  #         filters:
-  #           branches:
-  #             only:
-  #               - master
-  #
+  main_workflow:
+    jobs: 
+      - main_deploy:
+          filters:
+            branches:
+              only:
+              - master
+
