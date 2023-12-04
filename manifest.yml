@@ -1,13 +1,17 @@
----
-name: analytics-api
-# We're pinning the buildpack temporarily to a version that supports Node 10.x
-# Support for those versions was removed in v1.7.53 of the buildpack:
-# https://github.com/cloudfoundry/nodejs-buildpack/releases/tag/v1.7.53
-# TODO - update the app to use a newer (still supported) version of Node
-buildpack: https://github.com/cloudfoundry/nodejs-buildpack
-memory: 128M
-instances: 2
-command: npm start
-services:
-- analytics-reporter-database
-stack: cflinuxfs3
+applications:
+- name: analytics-reporter-api
+  instances: 1
+  memory: 128M
+  buildpacks:
+      - nodejs_buildpack
+  command: "chmod +x ./entrypoint.sh && ./entrypoint.sh"
+  services:
+  - analytics-reporter-database
+  stack: cflinuxfs4
+  env:
+    API_DATA_GOV_SECRET: ${API_DATA_GOV_SECRET}
+    NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
+    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+    NODE_ENV: production 
+    PGSSLMODE: true 
+
