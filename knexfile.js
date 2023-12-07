@@ -2,7 +2,9 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      database: 'analytics-reporter'
+      user: process.env.POSTGRES_USER || 'postgres',
+      password: process.env.POSTGRES_PASSWORD || '123abc',
+      database: process.env.POSTGRES_DATABASE || 'analytics-reporter',
     }
   },
   production: {
