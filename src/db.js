@@ -33,9 +33,10 @@ const buildTimeQuery = (before, after) => {
   return [true];
 };
 
-const queryDomain = (domain, reportName, limitParam, pageParam, before, after) => {
+const queryDomain = (domain, reportName, limitParam, pageParam, before, after, dbTable) => {
   const timeQuery = buildTimeQuery(before, after);
-  return db('analytics_data')
+
+  return db(dbTable)
     .where({ report_name: reportName })
     .whereRaw('data->> \'domain\' = ?', [domain])
     .whereRaw(...timeQuery)
@@ -64,17 +65,20 @@ const query = ({ reportName,
   page = 1,
   domain = null,
   after = null,
-  before = null
+  before = null,
+  version
  }) => {
+  // we have different tables for new ga4
+  const dbTable = version === '1.1' ? "analytics_data" : "analytics_data_ga4"
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
   if (domain && reportName !== 'download') {
-    return queryDomain(domain, reportName, limitParam, pageParam, before, after);
+    return queryDomain(domain, reportName, limitParam, pageParam, before, after, version);
   }
   const recordQuery = Object.assign({ report_name: reportName, report_agency: reportAgency });
   const timeQuery = buildTimeQuery(before, after);
 
-  return db('analytics_data')
+  return db(dbTable)
     .where(recordQuery)
     .whereRaw(...timeQuery)
     // Using `orderByRaw` in order to specifcy NULLS LAST, see:
