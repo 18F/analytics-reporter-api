@@ -5,7 +5,6 @@ const apiDataGovFilter = (req, res, next) => {
     return next();
   }
   else if (process.env.NODE_ENV !== 'development') {
-  console.log('inside')
     if (req.headers['api-data-gov-secret'] !== config.api_data_gov_secret) {
     res.status(403);
     return res.json({
