@@ -97,13 +97,13 @@ routesVersioning({
    "~1.2.0": fetchData,
 }, NoMatchFoundCallback));
 
-router.get('/v:version/:domain/reports/:reportName/data',
+router.get('/v:version/domain/:domain/reports/:reportName/data',
 routesVersioning({
    "1.1.0": respondDomainV1, // legacy
    "~1.2.0": checkDomainFilter,
 }, NoMatchFoundCallback));
 
-router.get('/v:version/:reportAgency/reports/:reportName/data',
+router.get('/v:version/agencies/:reportAgency/reports/:reportName/data',
 routesVersioning({
    "1.1.0": respondV1, // legacy
    "~1.2.0": fetchData,
