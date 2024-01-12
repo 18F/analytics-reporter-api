@@ -75,14 +75,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// we need to support legacy route
-// app.get('/v1.1/domain/:domain/reports/:reportName/data', checkDomainFilter);
-// app.get('/v1.1/agencies/:reportAgency/reports/:reportName/data', fetchData);
-// app.get('/v1.1/reports/:reportName/data', fetchData);
-
-// We need a way to set versions without breaking the request
-// Right now if we update '/v1/reports/:reportName/data' to '/v2/reports/:reportName/data' anyone requesting from '/v1/reports/:reportName/data' will have a broken application
-
 // middleware
 router.use('/v:version/', function(req, res, next) {
     console.log('req', req.params.version)
@@ -94,19 +86,19 @@ router.use('/v:version/', function(req, res, next) {
 router.get('/v:version/reports/:reportName/data',
 routesVersioning({
    "1.1.0": respondV1, // legacy
-   "~1.2.0": fetchData,
+   "~2.0.0": fetchData,
 }, NoMatchFoundCallback));
 
 router.get('/v:version/domain/:domain/reports/:reportName/data',
 routesVersioning({
    "1.1.0": respondDomainV1, // legacy
-   "~1.2.0": checkDomainFilter,
+   "~2.0.0": checkDomainFilter,
 }, NoMatchFoundCallback));
 
 router.get('/v:version/agencies/:reportAgency/reports/:reportName/data',
 routesVersioning({
    "1.1.0": respondV1, // legacy
-   "~1.2.0": fetchData,
+   "~2.0.0": fetchData,
 }, NoMatchFoundCallback));
 
 function NoMatchFoundCallback(req, res) {
@@ -127,6 +119,5 @@ function respondDomainV1(req, res) {
   console.log('v1 is deprecated. Use v2 instead. See https://analytics.usa.gov/developer')
   return checkDomainFilter(req, res)
 }
-
 
 module.exports = app;
