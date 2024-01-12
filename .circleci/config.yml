@@ -68,7 +68,7 @@ jobs:
               cf login -u $CF_USERNAME_DEV -p $CF_PASSWORD_DEV -o gsa-opp-analytics -s analytics-dev
               cat manifest.yml
               cf push -f "./manifest.yml"
-              cf set-env analytics-reporter-api-develop API_DATA_GOV_SECRET "$API_SECRET"
+              cf set-env analytics-reporter-api-develop API_DATA_GOV_SECRET "$API_SECRET_LOWER"
               cf restage analytics-reporter-api-develop
               cf logout
 
@@ -140,7 +140,7 @@ jobs:
               cf login -u $CF_STAGING_SPACE_DEPLOYER_USERNAME -p $CF_STAGING_SPACE_DEPLOYER_PASSWORD -o gsa-opp-analytics -s analytics-staging
               cat manifest.yml
               cf push -f "./manifest.yml"
-              cf set-env analytics-reporter-api-staging API_DATA_GOV_SECRET "$API_SECRET"
+              cf set-env analytics-reporter-api-staging API_DATA_GOV_SECRET "$API_SECRET_LOWER"
               cf restage analytics-reporter-api-staging
               cf logout
 
