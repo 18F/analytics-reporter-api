@@ -69,6 +69,7 @@ const query = ({ reportName,
   version
  }) => {
   // we have different tables for new ga4
+  // TODO: once UA has sunset we can remove this
   const dbTable = version === '1.1' ? "analytics_data" : "analytics_data_ga4"
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
