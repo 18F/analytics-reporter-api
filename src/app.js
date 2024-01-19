@@ -50,15 +50,18 @@ const filterDownloadResponse = (response, params) => {
 const fetchData = (req, res) => {
   const params = Object.assign(req.query, req.params);
   db.query(params).then(result => {
-    const response = result.map(dataPoint => Object.assign({
+    const response = result.map(dataPoint => Object.assign(
+    {
+      notice: req.version === '1.1' ? 'v1 is no longer supported. Use v2 instead. See https://analytics.usa.gov/developer' : undefined,
       id: dataPoint.id,
       date: formatDateForDataPoint(dataPoint),
       report_name: dataPoint.report_name,
       report_agency: dataPoint.report_agency,
-      version: dataPoint.version
     }, dataPoint.data));
+
     const filteredResponse = filterDownloadResponse(response, params);
     res.json(filteredResponse);
+
   }).catch(err => {
     console.error('Unexpected Error:', err);
     res.status(400);
@@ -77,7 +80,6 @@ app.get('/', (req, res) => {
 
 // middleware
 router.use('/v:version/', function(req, res, next) {
-    console.log('req', req.params.version)
     const version = req.params.version;
     req.version = version
     next();
@@ -102,21 +104,15 @@ routesVersioning({
 }, NoMatchFoundCallback));
 
 function NoMatchFoundCallback(req, res) {
-  res.status(404).send("Version not found. See https://analytics.usa.gov/developer");
+  res.status(404).json("Version not found. Visit https://analytics.usa.gov/developer for information on the latest supported version.");
 }
 
 // v1
 function respondV1(req, res) {
-  req.params.version = '1.1'
-  // TODO - report this message to response
-  console.log('v1 is deprecated. Use v2 instead. See https://analytics.usa.gov/developer')
   return fetchData(req, res)
 }
 
 function respondDomainV1(req, res) {
-  req.params.version = '1.1'
-  // TODO - report this message to response
-  console.log('v1 is deprecated. Use v2 instead. See https://analytics.usa.gov/developer')
   return checkDomainFilter(req, res)
 }
 
