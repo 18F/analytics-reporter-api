@@ -7,6 +7,7 @@ const proxyquire = require('proxyquire');
 const request = require('supertest-as-promised');
 
 const db = {};
+const noticeValue = 'v1 is being deprecated. Use v2 instead. See https://analytics.usa.gov/developer'
 
 const app = proxyquire('../src/app', {
   './db': db
@@ -22,8 +23,8 @@ describe('app', () => {
       expect(params.reportAgency).to.equal('fake-agency');
       expect(params.reportName).to.equal('fake-report');
       return Promise.resolve([
-        { id: 1, date: new Date('2017-01-01') },
-        { id: 2, date: new Date('2017-01-02') }
+        { id: 1, date: new Date('2017-01-01'), notice: `${noticeValue}` },
+        { id: 2, date: new Date('2017-01-02'), notice: `${noticeValue}` }
       ]);
     };
 
@@ -33,8 +34,8 @@ describe('app', () => {
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal([
-        { id: 1, date: '2017-01-01' },
-        { id: 2, date: '2017-01-02' }
+        { id: 1, date: '2017-01-01', notice: `${noticeValue}` },
+        { id: 2, date: '2017-01-02', notice: `${noticeValue}` }
       ]);
       done();
     }).catch(done);
@@ -45,8 +46,8 @@ describe('app', () => {
       expect(params.reportAgency).to.be.undefined;
       expect(params.reportName).to.equal('fake-report');
       return Promise.resolve([
-        { id: 1, date: new Date('2017-01-01') },
-        { id: 2, date: new Date('2017-01-02') }
+        { id: 1, date: new Date('2017-01-01'), notice: `${noticeValue}` },
+        { id: 2, date: new Date('2017-01-02'), notice: `${noticeValue}` }
       ]);
     };
 
@@ -56,8 +57,8 @@ describe('app', () => {
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal([
-        { id: 1, date: '2017-01-01' },
-        { id: 2, date: '2017-01-02' }
+        { id: 1, date: '2017-01-01', notice: `${noticeValue}` },
+        { id: 2, date: '2017-01-02', notice: `${noticeValue}` }
       ]);
       done();
     }).catch(done);
@@ -69,8 +70,8 @@ describe('app', () => {
       expect(params.reportName).to.equal('fake-report');
       expect(params.limit).to.equal('50');
       return Promise.resolve([
-        { id: 1, date: new Date('2017-01-01') },
-        { id: 2, date: new Date('2017-01-02') }
+        { id: 1, date: new Date('2017-01-01'), notice: `${noticeValue}` },
+        { id: 2, date: new Date('2017-01-02'), notice: `${noticeValue}` }
       ]);
     };
 
@@ -80,8 +81,8 @@ describe('app', () => {
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal([
-        { id: 1, date: '2017-01-01' },
-        { id: 2, date: '2017-01-02' }
+        { id: 1, date: '2017-01-01', notice: `${noticeValue}` },
+        { id: 2, date: '2017-01-02', notice: `${noticeValue}` }
       ]);
       done();
     }).catch(done);
@@ -131,7 +132,7 @@ describe('app', () => {
       expect(params.domain).to.equal('fakeiscool.gov');
       expect(params.reportName).to.equal('site');
       return Promise.resolve([
-        { id: 1, report_name: 'site', date: new Date('2017-01-01'), data: { domain: 'fakeiscool.gov' } }
+        { id: 1, date: new Date('2017-01-01'), notice: `${noticeValue}`,  report_name: 'site', data: { domain: 'fakeiscool.gov' } }
       ]);
     };
 
@@ -141,7 +142,7 @@ describe('app', () => {
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal([
-        { id: 1, date: '2017-01-01', report_name: 'site', domain: 'fakeiscool.gov' }
+        { id: 1, date: '2017-01-01', notice: `${noticeValue}`, report_name: 'site', domain: 'fakeiscool.gov' }
       ]);
       done();
     }).catch(done);
@@ -152,9 +153,9 @@ describe('app', () => {
       expect(params.domain).to.equal('fakeiscool.gov');
       expect(params.reportName).to.equal('download');
       return Promise.resolve([
-        { id: 1, date: new Date('2017-01-01'), report_name: 'download', data: { page: 'fakeiscool.gov/w8.pdf' } },
-        { id: 2, date: new Date('2017-01-02'), report_name: 'download', data: { page: 'fakeiscool.gov/westworldtheshow/w8.pdf' } },
-        { id: 3, date: new Date('2017-01-03'), report_name: 'download', data: { page: 'notiscool.gov/westworldtheshow/timewarpagain.pdf' } }
+        { id: 1, date: new Date('2017-01-01'), notice: `${noticeValue}`,report_name: 'download', data: { page: 'fakeiscool.gov/w8.pdf' } },
+        { id: 2, date: new Date('2017-01-02'), notice: `${noticeValue}`,report_name: 'download', data: { page: 'fakeiscool.gov/westworldtheshow/w8.pdf' } },
+        { id: 3, date: new Date('2017-01-03'), notice: `${noticeValue}`, report_name: 'download', data: { page: 'notiscool.gov/westworldtheshow/timewarpagain.pdf' } }
       ]);
     };
 
@@ -164,8 +165,8 @@ describe('app', () => {
 
     dataRequest.then(response => {
       expect(response.body).to.deep.equal([
-        { id: 1, date: '2017-01-01', page: 'fakeiscool.gov/w8.pdf', report_name: 'download' },
-        { id: 2, date: '2017-01-02', report_name: 'download', page: 'fakeiscool.gov/westworldtheshow/w8.pdf' }
+        { id: 1, date: '2017-01-01', notice: `${noticeValue}`, page: 'fakeiscool.gov/w8.pdf', report_name: 'download' },
+        { id: 2, date: '2017-01-02', notice: `${noticeValue}`, report_name: 'download', page: 'fakeiscool.gov/westworldtheshow/w8.pdf' }
       ]);
       done();
     }).catch(done);
