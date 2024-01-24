@@ -1,4 +1,4 @@
-version: 2.1  
+version: 2.1
 jobs:
   develop_deploy:
     docker:
@@ -11,25 +11,25 @@ jobs:
           POSTGRES_DB: analytics-api-test
     steps:
       - checkout
-      
+
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-      
+
       - run:
           name: install dependencies
           command: npm install
-      
+
       - save_cache:
           paths:
             - ./node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      
-      # - run:
-           # name: run tests
-           # command: npm test
-       
+
+      - run:
+           name: run tests
+           command: npm test
+
       - run:
           name: Replace Data URL in manifest.yml file when deploying to develop
           command: |
@@ -51,14 +51,14 @@ jobs:
               rm ./src/config.js
               mv ./src/config.js.cloudgov ./src/config.js
               rm knexfile.js
-              mv knexfile.js.cloudgov knexfile.js 
+              mv knexfile.js.cloudgov knexfile.js
 
-      - run:   
+      - run:
           name: Install CF CLI
           command: |
               sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
               sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
-      
+
       - run:
           name: deploy
           command: |
@@ -83,25 +83,25 @@ jobs:
           POSTGRES_DB: analytics-api-test
     steps:
       - checkout
-      
+
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-      
+
       - run:
           name: install dependencies
           command: npm install
-      
+
       - save_cache:
           paths:
             - ./node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      
+
       - run:
            name: run tests
            command: npm test
-       
+
       - run:
           name: Replace Data URL in manifest.yml file when deploying to staging
           command: |
@@ -125,12 +125,12 @@ jobs:
               rm ./src/config.js
               mv ./src/config.js.cloudgov ./src/config.js
 
-      - run:   
+      - run:
           name: Install CF CLI
           command: |
               sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
               sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
-      
+
       - run:
           name: deploy
           command: |
@@ -155,25 +155,25 @@ jobs:
           POSTGRES_DB: analytics-api-test
     steps:
       - checkout
-      
+
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-      
+
       - run:
           name: install dependencies
           command: npm install
-      
+
       - save_cache:
           paths:
             - ./node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      
+
       - run:
            name: run tests
            command: npm test
-       
+
       - run:
           name: Replace Data URL in manifest.yml file when deploying to production
           command: |
@@ -197,12 +197,12 @@ jobs:
               rm ./src/config.js
               mv ./src/config.js.cloudgov ./src/config.js
 
-      - run:   
+      - run:
           name: Install CF CLI
           command: |
               sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
               sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
-      
+
       - run:
           name: deploy
           command: |
@@ -218,7 +218,7 @@ jobs:
 
 workflows:
   develop_workflow:
-    jobs: 
+    jobs:
       - develop_deploy:
           filters:
             branches:
@@ -226,7 +226,7 @@ workflows:
               - develop
 
   staging:
-    jobs: 
+    jobs:
       - staging_deploy:
           filters:
             branches:
@@ -234,7 +234,7 @@ workflows:
               - stage
 
   main_workflow:
-    jobs: 
+    jobs:
       - main_deploy:
           filters:
             branches:
