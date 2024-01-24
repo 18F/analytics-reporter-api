@@ -74,7 +74,7 @@ const query = ({ reportName,
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
   if (domain && reportName !== 'download') {
-    return queryDomain(domain, reportName, limitParam, pageParam, before, after, version);
+    return queryDomain(domain, reportName, limitParam, pageParam, before, after, dbTable);
   }
   const recordQuery = Object.assign({ report_name: reportName, report_agency: reportAgency });
   const timeQuery = buildTimeQuery(before, after);
