@@ -19,7 +19,7 @@ describe('db', () => {
         { report_name: 'my-report', report_agency: 'not-my-agency' },
         { report_name: 'my-report', report_agency: null }
       ]).then(() => {
-        return db.query({ reportName: 'my-report', reportAgency: 'my-agency' });
+        return db.query({ reportName: 'my-report', reportAgency: 'my-agency', version: '1.1' });
       }).then(results => {
         expect(results).to.have.length(1);
         expect(results[0].report_name).to.equal('my-report');
@@ -34,7 +34,7 @@ describe('db', () => {
         { report_name: 'my-report', report_agency: 'not-my-agency' },
         { report_name: 'my-report', report_agency: null }
       ]).then(() => {
-        return db.query({ reportName: 'my-report' });
+        return db.query({ reportName: 'my-report' , version: '1.1'});
       }).then(results => {
         expect(results).to.have.length(1);
         expect(results[0].report_name).to.equal('my-report');
@@ -50,7 +50,7 @@ describe('db', () => {
         { report_name: 'report', date: '2017-01-01' },
         { report_name: 'report', date: '2017-01-03' }
       ]).then(() => {
-        return db.query({ reportName: 'report' });
+        return db.query({ reportName: 'report' , version: '1.1'});
       }).then(results => {
         expect(results).to.have.length(3);
         results.forEach((result, index) => {
@@ -68,7 +68,7 @@ describe('db', () => {
         return { report_name: 'report', date: '2017-01-01' };
       });
       databaseSupport.client('analytics_data').insert(rows).then(() => {
-        return db.query({ reportName: 'report', limit: 4 });
+        return db.query({ reportName: 'report', limit: 4 , version: '1.1'});
       }).then(results => {
         expect(results).to.have.length(4);
         done();
@@ -81,7 +81,7 @@ describe('db', () => {
         return { report_name: 'report', date: '2017-01-01' };
       });
       databaseSupport.client('analytics_data').insert(rows).then(() => {
-        return db.query({ reportName: 'report' });
+        return db.query({ reportName: 'report' , version: '1.1'});
       }).then(results => {
         expect(results).to.have.length(1000);
         done();
@@ -94,7 +94,7 @@ describe('db', () => {
         return { report_name: 'report', date: '2017-01-01' };
       });
       databaseSupport.client('analytics_data').insert(rows).then(() => {
-        return db.query({ reportName: 'report', limit: 11000 });
+        return db.query({ reportName: 'report', limit: 11000 , version: '1.1'});
       }).then(results => {
         expect(results).to.have.length(10000);
         done();
@@ -109,13 +109,13 @@ describe('db', () => {
         return { report_name: 'report', date: `2017-01-0${index + 1}` };
       });
       databaseSupport.client('analytics_data').insert(rows).then(() => {
-        return db.query({ reportName: 'report', limit: 3, page: 1 });
+        return db.query({ reportName: 'report', limit: 3, page: 1 , version: '1.1'});
       }).then(results => {
         expect(results).to.have.length(3);
         expect(results[0].date.toISOString()).to.match(/^2017-01-06/);
         expect(results[2].date.toISOString()).to.match(/^2017-01-04/);
 
-        return db.query({ reportName: 'report', limit: 3, page: 2 });
+        return db.query({ reportName: 'report', limit: 3, page: 2 , version: '1.1'});
       })
       .then(results => {
         expect(results).to.have.length(3);
@@ -152,7 +152,7 @@ describe('db', () => {
           { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2017-01-03', data: { domain: 'test.gov' } }]
         ).then(() => {
-          return db.queryDomain('test.gov', 'site', 2, 1, null, null);
+          return db.queryDomain('test.gov', 'site', 2, 1, null, null, "analytics_data");
         }).then(results => {
           expect(results).to.have.length(2);
           done();
@@ -167,7 +167,7 @@ describe('db', () => {
           { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2017-01-03', data: { domain: 'test.gov' } }]
       ).then(() => {
-        return db.queryDomain('test.gov', 'site', 1000, 1, null, null);
+        return db.queryDomain('test.gov', 'site', 1000, 1, null, null, "analytics_data");
       }).then(results => {
         expect(results).to.have.length(2);
         expect(results[0].report_name).to.equal('site');
@@ -184,7 +184,7 @@ describe('db', () => {
           { report_name: 'site', date: '2017-01-01', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2017-01-03', data: { domain: 'usda.gov' } }]
       ).then(() => {
-        return db.queryDomain('test.gov', 'site', 1000, 1, null, null);
+        return db.queryDomain('test.gov', 'site', 1000, 1, null, null, "analytics_data");
       }).then(results => {
         expect(results).to.have.length(2);
         expect(results[0].report_name).to.equal('site');
@@ -203,7 +203,7 @@ describe('db', () => {
           { report_name: 'site', date: '2018-01-03', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
       ).then(() => {
-        return db.queryDomain('test.gov', 'site', 1000, 1, '2017-10-20', null);
+        return db.queryDomain('test.gov', 'site', 1000, 1, '2017-10-20', null, "analytics_data");
       }).then(results => {
         expect(results).to.have.length(2);
         expect(results[0].report_name).to.equal('site');
@@ -222,7 +222,7 @@ describe('db', () => {
           { report_name: 'site', date: '2018-01-03', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
       ).then(() => {
-        return db.queryDomain('test.gov', 'site', 1000, 1, null, '2017-10-20');
+        return db.queryDomain('test.gov', 'site', 1000, 1, null, '2017-10-20', "analytics_data");
       }).then(results => {
         expect(results).to.have.length(1);
         expect(results[0].report_name).to.equal('site');
@@ -243,7 +243,7 @@ describe('db', () => {
           { report_name: 'site', date: '2017-11-03', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
       ).then(() => {
-        return db.queryDomain('test.gov', 'site', 1000, 1, '2018-01-02', '2017-10-20');
+        return db.queryDomain('test.gov', 'site', 1000, 1, '2018-01-02', '2017-10-20', "analytics_data");
       }).then(results => {
         expect(results).to.have.length(2);
         expect(results[0].report_name).to.equal('site');
@@ -264,7 +264,7 @@ describe('db', () => {
           { report_name: 'site', date: '2017-11-03', data: { domain: 'test.gov' } },
           { report_name: 'site', date: '2018-01-03', data: { domain: 'usda.gov' } }]
       ).then(() => {
-        return db.queryDomain('test.gov', 'site', 1000, 1, '2018-01-04', '2017-10-20');
+        return db.queryDomain('test.gov', 'site', 1000, 1, '2018-01-04', '2017-10-20', "analytics_data");
       }).then(results => {
         expect(results).to.have.length(2);
         expect(results[0].report_name).to.equal('site');
