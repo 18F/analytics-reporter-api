@@ -52,7 +52,7 @@ const fetchData = (req, res) => {
   db.query(params).then(result => {
     const response = result.map(dataPoint => Object.assign(
     {
-      notice: req.version === '1.1' ? 'v1 is no longer supported. Use v2 instead. See https://analytics.usa.gov/developer' : undefined,
+      notice: req.version === '1.1' ? 'v1 is being deprecated. Use v2 instead. See https://analytics.usa.gov/developer' : undefined,
       id: dataPoint.id,
       date: formatDateForDataPoint(dataPoint),
       report_name: dataPoint.report_name,
