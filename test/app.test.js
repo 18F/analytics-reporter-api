@@ -195,3 +195,36 @@ routes.forEach(route => {
     });
   });
 })
+
+describe(`app with unspupported version`, () => {
+    beforeEach(() => {
+      db.query = () => Promise.resolve();
+    });
+
+    it('should not accept unsupported versions', done => {
+      db.query = (params) => {
+        expect(params.reportAgency).to.equal('fake-agency');
+        expect(params.reportName).to.equal('fake-report');
+        const arr = handleIfRouteNotice(route, [
+          { id: 1, date: new Date('2017-01-01')},
+          { id: 2, date: new Date('2017-01-02')}
+        ])
+        return Promise.resolve(arr)
+      };
+
+      const unspupportedVersion = 'v2.x'
+      const expectedErrorMessage = 'Version not found. Visit https://analytics.usa.gov/developer for information on the latest supported version.';
+
+      const dataRequest = request(app)
+        .get(`/${unspupportedVersion}/agencies/fake-agency/reports/fake-report/data`)
+        .expect(404);
+
+      dataRequest.then(response => {
+        expect(response).to.include({
+          _body: expectedErrorMessage,
+          status: 404
+        });
+        done();
+      }).catch(done);
+    });
+});
