@@ -59,8 +59,9 @@ const queryDomain = (domain, reportName, limitParam, pageParam, before, after, d
     .offset((pageParam - 1) * limitParam);
 };
 
-const query = ({ reportName,
-   reportAgency = null,
+const query = ({
+  reportName,
+  reportAgency = null,
   limit = 1000,
   page = 1,
   domain = null,
