@@ -51,7 +51,7 @@ is configured to write to the same database and run with the `--write-to-databas
 # Using the API
 
 The Analytics API exposes 3 API endpoints:
-include version in the request, ie `/v1.1/`
+include version in the request, ie `/v2/`
 
 - `/reports/:report_name/data`
 - `/agencies/:agency_name/reports/:reportName/data`
