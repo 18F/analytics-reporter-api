@@ -9,7 +9,7 @@
     "postinstall": "",
     "pretest": "NODE_ENV=test npm run migrate",
     "test": "NODE_ENV=test `npm bin`/mocha test/**/*.test.js --exit",
-    "migrate": "`npm bin`/knex migrate:latest",
+    "migrate": "knex migrate:latest",
     "lint": "`npm bin`/eslint src/**.js test/**.js *.js"
   },
   "repository": {
