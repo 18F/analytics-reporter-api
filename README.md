@@ -13,8 +13,7 @@ in response to HTTP requests.
 
 This Analytics API maintains the schema for the database that the
 [Analytics Reporter](https://github.com/18F/analytics-reporter)
-writes to.
-Thus, the Analytics API must be setup and
+writes to. Thus, the Analytics API must be setup and
 configured before the Analytics Reporter starts writing data.
 
 First, create the database:
@@ -22,6 +21,10 @@ First, create the database:
 ```shell
 createdb analytics-reporter
 ```
+
+````bash
+export NODE_ENV=development # developing locally
+````
 
 Once the database is created, clone the app and install the dependencies via NPM.
 The install script has a postinstall hook that will migrate
@@ -48,6 +51,7 @@ is configured to write to the same database and run with the `--write-to-databas
 # Using the API
 
 The Analytics API exposes 3 API endpoints:
+include version in the request, ie `/v2/`
 
 - `/reports/:report_name/data`
 - `/agencies/:agency_name/reports/:reportName/data`
