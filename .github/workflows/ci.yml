@@ -1,0 +1,80 @@
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+            node-version: "lts/*"
+            cache: 'npm'
+      - name: Create Checksum of package.json
+        run: echo PACKAGE_CHECKSUM="$(shasum package.json | awk '{ print $1 }')" >> "$GITHUB_ENV"
+      - name: Restore Cache
+        uses: actions/cache/restore@v4
+        with:
+            path: ./node_modules
+            key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        id: cache
+        with:
+            path: ./node_modules
+            key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: Lint JavaScript
+        run: npm run lint
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    #Spin up postgres as a service, wait till healthy before moving on. Uses latest Postgres Version.
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: analytics_reporter_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+            node-version: "lts/*"
+            cache: 'npm'
+      - name: Create Checksum of package.json
+        run: echo PACKAGE_CHECKSUM="$(shasum package.json | awk '{ print $1 }')" >> "$GITHUB_ENV"
+      - name: Restore Cache
+        uses: actions/cache/restore@v4
+        with:
+            path: ./node_modules
+            key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        id: cache
+        with:
+            path: ./node_modules
+            key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: Run tests
+        env:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: analytics_reporter_test
+            POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+        run: npm test
