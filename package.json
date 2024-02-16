@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.js",
     "postinstall": "",
     "pretest": "NODE_ENV=test npm run migrate",
-    "test": "NODE_ENV=test `npm bin`/mocha test/**/*.test.js --exit",
+    "test": "NODE_ENV=test mocha",
     "migrate": "knex migrate:latest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

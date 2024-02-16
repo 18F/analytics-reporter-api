@@ -28,7 +28,7 @@ jobs:
         with:
             path: ./node_modules
             key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
-      - name: Lint JavaScript
+      - name: lint javascript
         run: npm run lint
   test:
     needs: lint
@@ -39,8 +39,8 @@ jobs:
         image: postgres:latest
         env:
           POSTGRES_DB: analytics_reporter_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: analytics
+          POSTGRES_PASSWORD: 123abc
         ports:
           - 5432:5432
         options:
@@ -71,10 +71,5 @@ jobs:
         with:
             path: ./node_modules
             key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
-      - name: Run tests
-        env:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: analytics_reporter_test
-            POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
+      - name: run tests
         run: npm test

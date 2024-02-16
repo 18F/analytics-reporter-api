@@ -34,34 +34,6 @@ install_cf_cli: &install_cf_cli
         sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
 
 jobs:
-  lint_js:
-    docker:
-      - image: cimg/node:20.11.0-browsers
-    steps:
-      - checkout
-      - *restore_npm_cache
-      - *install_npm_packages
-      - *save_npm_cache
-      - run:
-          name: lint javascript
-          command: npm run lint
-  test:
-    docker:
-      - image: cimg/node:20.11.0-browsers
-        environment:
-          POSTGRES_USER: postgres
-          NODE_ENV: test
-      - image: circleci/postgres:9.5-alpine
-        environment:
-          POSTGRES_DB: analytics-api-test
-    steps:
-      - checkout
-      - *restore_npm_cache
-      - *install_npm_packages
-      - *save_npm_cache
-      - run:
-          name: unit test javascript
-          command: npm test
   development_env_deploy:
     docker:
       - image: cimg/node:20.11.0-browsers
