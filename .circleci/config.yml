@@ -1,8 +1,53 @@
 version: 2.1
+
+restore_npm_cache: &restore_npm_cache
+  restore_cache:
+    keys:
+      - v1-dependencies-{{ checksum "package.json" }}
+      - v1-dependencies-
+
+install_npm_packages: &install_npm_packages
+  run:
+    name: install dependencies
+    command: npm install
+
+save_npm_cache: &save_npm_cache
+  save_cache:
+    paths:
+      - ./node_modules
+    key: v1-dependencies-{{ checksum "package.json" }}
+
+fix_file_suffixes_for_cloud_gov: &fix_file_suffixes_for_cloud_gov
+  run:
+    name: Delete Config.js and drop sufffix on Config.js.cloudgov
+    command: |
+        rm ./src/config.js
+        mv ./src/config.js.cloudgov ./src/config.js
+        rm knexfile.js
+        mv knexfile.js.cloudgov knexfile.js
+
+install_cf_cli: &install_cf_cli
+  run:
+    name: Install CF CLI
+    command: |
+        sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
+        sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
+
 jobs:
-  develop_deploy:
+  lint_js:
     docker:
-      - image: cimg/node:16.19.1-browsers
+      - image: cimg/node:20.11.0-browsers
+    steps:
+      - checkout
+      - *restore_npm_cache
+      - *install_npm_packages
+      - *save_npm_cache
+      - run:
+          name: lint javascript
+          command: npm run lint
+  test:
+    docker:
+      - image: cimg/node:20.11.0-browsers
         environment:
           POSTGRES_USER: postgres
           NODE_ENV: test
@@ -11,25 +56,20 @@ jobs:
           POSTGRES_DB: analytics-api-test
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-
+      - *restore_npm_cache
+      - *install_npm_packages
+      - *save_npm_cache
       - run:
-          name: install dependencies
-          command: npm install
-
-      - save_cache:
-          paths:
-            - ./node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run:
-           name: run tests
-           command: npm test
-
+          name: unit test javascript
+          command: npm test
+  development_env_deploy:
+    docker:
+      - image: cimg/node:20.11.0-browsers
+    steps:
+      - checkout
+      - *restore_npm_cache
+      - *install_npm_packages
+      - *save_npm_cache
       - run:
           name: Replace Data URL in manifest.yml file when deploying to develop
           command: |
@@ -39,26 +79,12 @@ jobs:
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-develop@g' manifest.yml
               mv manifest.yml manifest.yml.src
               envsubst < manifest.yml.src > manifest.yml
-
       - run:
           name: Run sed on entrypoint.sh when deploying to develop
           command: |
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-develop"@g' entrypoint.sh
-
-      - run:
-          name: Delete Config.js and drop sufffix on Config.js.cloudgov
-          command: |
-              rm ./src/config.js
-              mv ./src/config.js.cloudgov ./src/config.js
-              rm knexfile.js
-              mv knexfile.js.cloudgov knexfile.js
-
-      - run:
-          name: Install CF CLI
-          command: |
-              sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
-              sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
-
+      - *fix_file_suffixes_for_cloud_gov
+      - *install_cf_cli
       - run:
           name: deploy
           command: |
@@ -71,37 +97,14 @@ jobs:
               cf set-env analytics-reporter-api-develop API_DATA_GOV_SECRET "$API_SECRET_LOWER"
               cf restage analytics-reporter-api-develop
               cf logout
-
-  staging_deploy:
+  staging_env_deploy:
     docker:
-      - image: cimg/node:16.19.1-browsers
-        environment:
-          POSTGRES_USER: postgres
-          NODE_ENV: test
-      - image: circleci/postgres:9.5-alpine
-        environment:
-          POSTGRES_DB: analytics-api-test
+      - image: cimg/node:20.11.0-browsers
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-
-      - run:
-          name: install dependencies
-          command: npm install
-
-      - save_cache:
-          paths:
-            - ./node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run:
-           name: run tests
-           command: npm test
-
+      - *restore_npm_cache
+      - *install_npm_packages
+      - *save_npm_cache
       - run:
           name: Replace Data URL in manifest.yml file when deploying to staging
           command: |
@@ -111,26 +114,12 @@ jobs:
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-staging@g' manifest.yml
               mv manifest.yml manifest.yml.src
               envsubst < manifest.yml.src > manifest.yml
-
       - run:
           name: Run sed on entrypoint.sh when deploying to staging
           command: |
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-staging"@g' entrypoint.sh
-
-      - run:
-          name: Delete Knexfile.js and drop sufffix on Knexfile.js.cloudgov
-          command: |
-              rm knexfile.js
-              mv knexfile.js.cloudgov knexfile.js
-              rm ./src/config.js
-              mv ./src/config.js.cloudgov ./src/config.js
-
-      - run:
-          name: Install CF CLI
-          command: |
-              sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
-              sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
-
+      - *fix_file_suffixes_for_cloud_gov
+      - *install_cf_cli
       - run:
           name: deploy
           command: |
@@ -143,37 +132,14 @@ jobs:
               cf set-env analytics-reporter-api-staging API_DATA_GOV_SECRET "$API_SECRET_LOWER"
               cf restage analytics-reporter-api-staging
               cf logout
-
-  main_deploy:
+  production_env_deploy:
     docker:
-      - image: cimg/node:16.19.1-browsers
-        environment:
-          POSTGRES_USER: postgres
-          NODE_ENV: test
-      - image: circleci/postgres:9.5-alpine
-        environment:
-          POSTGRES_DB: analytics-api-test
+      - image: cimg/node:20.11.0-browsers
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
-
-      - run:
-          name: install dependencies
-          command: npm install
-
-      - save_cache:
-          paths:
-            - ./node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-
-      - run:
-           name: run tests
-           command: npm test
-
+      - *restore_npm_cache
+      - *install_npm_packages
+      - *save_npm_cache
       - run:
           name: Replace Data URL in manifest.yml file when deploying to production
           command: |
@@ -183,26 +149,12 @@ jobs:
               sed -i 's@- analytics-reporter-database@- analytics-reporter-database-production@g' manifest.yml
               mv manifest.yml manifest.yml.src
               envsubst < manifest.yml.src > manifest.yml
-
       - run:
           name: Run sed on entrypoint.sh when deploying to main
           command: |
               sed -i 's@NEW_RELIC_APP_NAME="analytics-reporter-api"@NEW_RELIC_APP_NAME="analytics-reporter-api-production"@g' entrypoint.sh
-
-      - run:
-          name: Delete Knexfile.js and drop sufffix on Knexfile.js.cloudgov
-          command: |
-              rm knexfile.js
-              mv knexfile.js.cloudgov knexfile.js
-              rm ./src/config.js
-              mv ./src/config.js.cloudgov ./src/config.js
-
-      - run:
-          name: Install CF CLI
-          command: |
-              sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
-              sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
-
+      - *fix_file_suffixes_for_cloud_gov
+      - *install_cf_cli
       - run:
           name: deploy
           command: |
@@ -216,28 +168,30 @@ jobs:
               cf restage analytics-reporter-api-production
               cf logout
 
-workflows:
-  develop_workflow:
-    jobs:
-      - develop_deploy:
-          filters:
-            branches:
-              only:
+ci:
+  jobs:
+    - lint
+    - test:
+        requires:
+          - lint
+    - development_env_deploy:
+        requires:
+          - test
+        filters:
+          branches:
+            only:
               - develop
-
-  staging:
-    jobs:
-      - staging_deploy:
-          filters:
-            branches:
-              only:
-              - stage
-
-  main_workflow:
-    jobs:
-      - main_deploy:
-          filters:
-            branches:
-              only:
+    - staging_env_deploy:
+        requires:
+          - test
+        filters:
+          branches:
+            only:
+              - staging
+    - production_env_deploy:
+        requires:
+          - test
+        filters:
+          branches:
+            only:
               - master
-
