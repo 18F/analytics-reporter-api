@@ -50,40 +50,104 @@ is configured to write to the same database and run with the `--write-to-databas
 
 # Using the API
 
+Full API docs can be found here: https://open.gsa.gov/api/dap/
+
+## Environments
+
+The base URLs for the 3 API envrionments:
+  - development: https://api.gsa.gov/analytics/dap/develop/
+  - staging: https://api.gsa.gov/analytics/dap/staging/
+  - production: https://api.gsa.gov/analytics/dap/
+
+## Overview
+
 The Analytics API exposes 3 API endpoints:
-include version in the request, ie `/v2/`
 
-- `/reports/:report_name/data`
-- `/agencies/:agency_name/reports/:reportName/data`
-- `/domain/:domain/reports/:reportName/data`
+- `/v{api_version}/reports/{report_name}/data`
+- `/v{api_version}/agencies/{agency_name}/reports/{report_name}/data`
+- `/v{api_version}/domain/{domain}/reports/{report_name}/data`
 
-Each endpoint renders a JSON array with the most recent 1000 records the
+Each endpoint renders a JSON array with the most recent 1000 records that the
 Analytics Reporter has generated for the given agency and report. If no records
 are found, an empty array is returned.
 
 Records are sorted according to the associated date.
 
-##### Limit
+### Limit query parameter
 
 If a different number of records is desired, the `limit` query parameter can be
 set to specify the desired number of records.
 
 ```
-/reports/realtime/data?limit=500
+/v2/reports/realtime/data?limit=500
 ```
 
 The maximum number of records that can be rendered for any given request is
 10,000.
 
-##### Page
+### Page query parameter
 
 If the desired record does not appear for the current request, the `page` query
 parameter can be used to get the next series of data points. Since the data is
 ordered by date, this parameter effectively allows older data to be queried.
 
 ```
-/reports/realtime/data?page=2
+/v2/reports/realtime/data?page=2
 ```
+
+## Migrating from API V1 to API V2
+
+### Background
+
+Analytics API V1 returns data from Google Analytics V3, also known as Universal
+Analytics (UA).
+
+Google is retiring UA and is encouraging users to move to their new
+version Google Analytics V4 (GA4) in 2024.
+
+Analytics API V2 returns data from GA4.
+
+### Migration details
+
+#### Requests
+
+The Analytics API endpoints are the same between V1 and V2, the only difference
+for API requests is the API version string.
+
+#### Responses
+
+Response data is slightly different in Analytics API V2.  This change is due to
+the data provided by Google Analytics. Some data fields were retired in GA4, and
+some other useful data fields were added. The changes follow:
+
+##### Deprecated fields
+
+- browser_version
+- has_social_referral
+- exits
+- exit_page
+
+##### New fields
+
+###### bounce_rate
+
+The percentage of sessions that were not engaged.  GA4 defines engaged as a
+session that lasts longer than 10 seconds or has multiple pageviews.
+
+###### file_name
+
+The page path of a downloaded file.
+
+###### language_code
+
+The ISO639 language setting of the user's device.  e.g. 'en-us'
+
+###### session_default_channel_group
+
+An enum which describes the session. Possible values:
+
+'Direct', 'Organic Search', 'Paid Social', 'Organic Social', 'Email',
+'Affiliates', 'Referral', 'Paid Search', 'Video', and 'Display'
 
 # Running the Tests
 
