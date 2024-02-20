@@ -1,0 +1,79 @@
+on:
+  workflow_call:
+    inputs:
+      APP_NAME:
+        required: true
+        type: string
+      DB_NAME:
+        required: true
+        type: string
+      NEW_RELIC_APP_NAME:
+        type: string
+      ORGANIZATION_NAME:
+        required: true
+        type: string
+      SPACE_NAME:
+        required: true
+        type: string
+    secrets:
+      CF_USERNAME:
+        required: true
+      CF_PASSWORD:
+        required: true
+      API_DATA_GOV_SECRET:
+        required: true
+      NEW_RELIC_LICENSE_KEY:
+
+jobs:
+  deploy_api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: 'npm'
+      - name: Create Checksum of package.json
+        run: echo PACKAGE_CHECKSUM="$(shasum package.json | awk '{ print $1 }')" >> "$GITHUB_ENV"
+      - name: Restore Cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ./node_modules
+          key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Save Cache
+        uses: actions/cache/save@v4
+        id: cache
+        with:
+          path: ./node_modules
+          key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: Replace env vars in manifest.yml file
+        run: |
+          sudo apt-get update
+          sudo apt-get install gettext
+          mv manifest.yml manifest.yml.src
+          envsubst < manifest.yml.src > manifest.yml
+      - name: Replace config.js and knexfile.js with .cloudgov versions of those files
+        run: |
+          rm ./src/config.js
+          mv ./src/config.js.cloudgov ./src/config.js
+          rm knexfile.js
+          mv knexfile.js.cloudgov knexfile.js
+      - name: Install CF CLI
+        run: |
+          sudo curl -v -L -o cf8-cli-installer_8.7.4_x86-64.deb 'https://packages.cloudfoundry.org/stable?release=debian64&version=8.7.4'
+          sudo dpkg -i cf8-cli-installer_8.7.4_x86-64.deb
+      - name: Login to cloud.gov and deploy
+        run: |
+          set -e
+          # Log into cloud.gov
+          cf api api.fr.cloud.gov
+          cf login -u $CF_USERNAME -p $CF_PASSWORD -o $ORGANIZATION_NAME -s $SPACE_NAME
+          cat manifest.yml
+          cf push -f "./manifest.yml"
+          cf set-env analytics-reporter-api-develop API_DATA_GOV_SECRET "$API_DATA_GOV_SECRET"
+          cf restage analytics-reporter-api-develop
+          cf logout
