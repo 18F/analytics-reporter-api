@@ -13,21 +13,8 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'npm'
-      - name: Create Checksum of package.json
-        run: echo PACKAGE_CHECKSUM="$(shasum package.json | awk '{ print $1 }')" >> "$GITHUB_ENV"
-      - name: Restore Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ./node_modules
-          key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
-      - name: Install Dependencies
-        run: npm install
-      - name: Save Cache
-        uses: actions/cache/save@v4
-        id: cache
-        with:
-          path: ./node_modules
-          key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: install dependencies
+        run: npm ci
       - name: lint javascript
         run: npm run lint
   test:
@@ -56,21 +43,8 @@ jobs:
         with:
           node-version: "lts/*"
           cache: 'npm'
-      - name: Create Checksum of package.json
-        run: echo PACKAGE_CHECKSUM="$(shasum package.json | awk '{ print $1 }')" >> "$GITHUB_ENV"
-      - name: Restore Cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ./node_modules
-          key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
-      - name: Install Dependencies
-        run: npm install
-      - name: Save Cache
-        uses: actions/cache/save@v4
-        id: cache
-        with:
-          path: ./node_modules
-          key: v1-dependencies-${{ env.PACKAGE_CHECKSUM }}
+      - name: install dependencies
+        run: npm ci
       - name: run tests
         run: npm test
   deploy_dev:
