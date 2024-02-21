@@ -125,4 +125,4 @@ const query = ({
   );
 };
 
-module.exports = { query, queryDomain, buildTimeQuery };
+module.exports = { query, queryDomain, buildTimeQuery, dbClient: db };

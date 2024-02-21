@@ -149,21 +149,41 @@ An enum which describes the session. Possible values:
 'Direct', 'Organic Search', 'Paid Social', 'Organic Social', 'Email',
 'Affiliates', 'Referral', 'Paid Search', 'Video', and 'Display'
 
-# Running the Tests
+# Linting
 
-The Analytics API application is backed by a test suite that uses
-[Mocha](https://mochajs.org/) to run tests.
-
-Before running the test suite, a database for the tests will need to be created.
+This repo uses Eslint and Prettier for code static analysis and formatting. Run
+the linter with:
 
 ```shell
-createdb analytics-api-test
+npm run lint
 ```
 
-Then the tests can be invoked via NPM. The test script has a pretest hook that
-migrates the database.
+Automatically fix lint issues with:
 
+```shell
+npm run lint:fix
 ```
+
+# Running the unit tests
+
+The unit tests for this repo require a local PostgreSQL database. You can run a
+local DB server or create a docker container using the provided test compose
+file. (Requires docker and docker-compose to be installed)
+
+Starting a docker test DB:
+
+```shell
+docker-compose -f docker-compose.test.yml up
+```
+
+Once you have a PostgreSQL DB running locally, you can run the tests. The test
+DB connection in knexfile.js has some default connection config which can be
+overridden with environment variables.  If using the provided docker-compose DB
+then you can avoid setting the connection details.
+
+Run the tests (pre-test hook runs DB migrations):
+
+```shell
 npm test
 ```
 
