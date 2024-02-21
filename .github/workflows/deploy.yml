@@ -71,7 +71,7 @@ jobs:
           cf api api.fr.cloud.gov
           cf login -u $CF_USERNAME -p $CF_PASSWORD -o $ORGANIZATION_NAME -s $SPACE_NAME
           cat manifest.yml
-          cf push -f "./manifest.yml"
+          cf push -f "./manifest.yml" --no-start
           cf set-env $APP_NAME API_DATA_GOV_SECRET "$API_DATA_GOV_SECRET"
           cf restage $APP_NAME
           cf logout
