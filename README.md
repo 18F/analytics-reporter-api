@@ -1,30 +1,25 @@
-[![Code Climate](https://codeclimate.com/github/18F/analytics-reporter-api/badges/gpa.svg)](https://codeclimate.com/github/18F/analytics-reporter-api)  [![CircleCI](https://circleci.com/gh/18F/analytics-reporter-api.svg?style=shield)](https://circleci.com/gh/18F/analytics-reporter-api)  [![Dependency Status](https://gemnasium.com/badges/github.com/18F/analytics-reporter-api.svg)](https://gemnasium.com/github.com/18F/analytics-reporter-api)
-
-
+[![Code Climate](https://codeclimate.com/github/18F/analytics-reporter-api/badges/gpa.svg)](https://codeclimate.com/github/18F/analytics-reporter-api)  [![CircleCI](https://circleci.com/gh/18F/analytics-reporter-api.svg?style=shield)](https://circleci.com/gh/18F/analytics-reporter-api)
 
 # Analytics API
 
 A system for publishing data retrieved from the Google Analytics API by the
 [Analytics Reporter](https://github.com/18F/analytics-reporter).
-This Analytics API serves data written to a PostgreSQL database by the Analytics Reporter,
-in response to HTTP requests.
+This Analytics API serves data written to a PostgreSQL database by the Analytics
+Reporter, in response to HTTP requests.
 
-# Setup
+## Setup
 
 This Analytics API maintains the schema for the database that the
 [Analytics Reporter](https://github.com/18F/analytics-reporter)
 writes to. Thus, the Analytics API must be setup and
 configured before the Analytics Reporter starts writing data.
 
-First, create the database:
+### Prerequistites
 
-```shell
-createdb analytics-reporter
-```
+* NodeJS > v20.x
+* A postgres DB running
 
-````bash
-export NODE_ENV=development # developing locally
-````
+### Clone the code and install dependencies
 
 Once the database is created, clone the app and install the dependencies via NPM.
 The install script has a postinstall hook that will migrate
@@ -44,22 +39,23 @@ npm start
 
 The API should now be available at `http://localhost:4444/`
 
-Note that the API will not render any data until
-[Analytics Reporter](https://github.com/18F/analytics-reporter)
-is configured to write to the same database and run with the `--write-to-database` option.
+Note that the API will not render any data because the database is empty.
+The [Analytics Reporter](https://github.com/18F/analytics-reporter)
+can be configured to write to the same database and run with the
+`--write-to-database` option in order to populate some records.
 
-# Using the API
+## Using the API
 
 Full API docs can be found here: https://open.gsa.gov/api/dap/
 
-## Environments
+### Environments
 
 The base URLs for the 3 API envrionments:
   - development: https://api.gsa.gov/analytics/dap/develop/
   - staging: https://api.gsa.gov/analytics/dap/staging/
   - production: https://api.gsa.gov/analytics/dap/
 
-## Overview
+### Overview
 
 The Analytics API exposes 3 API endpoints:
 
@@ -73,7 +69,7 @@ are found, an empty array is returned.
 
 Records are sorted according to the associated date.
 
-### Limit query parameter
+#### Limit query parameter
 
 If a different number of records is desired, the `limit` query parameter can be
 set to specify the desired number of records.
@@ -85,7 +81,7 @@ set to specify the desired number of records.
 The maximum number of records that can be rendered for any given request is
 10,000.
 
-### Page query parameter
+#### Page query parameter
 
 If the desired record does not appear for the current request, the `page` query
 parameter can be used to get the next series of data points. Since the data is
@@ -149,7 +145,7 @@ An enum which describes the session. Possible values:
 'Direct', 'Organic Search', 'Paid Social', 'Organic Social', 'Email',
 'Affiliates', 'Referral', 'Paid Search', 'Video', and 'Display'
 
-# Linting
+## Linting
 
 This repo uses Eslint and Prettier for code static analysis and formatting. Run
 the linter with:
@@ -164,7 +160,7 @@ Automatically fix lint issues with:
 npm run lint:fix
 ```
 
-# Running the unit tests
+## Running the unit tests
 
 The unit tests for this repo require a local PostgreSQL database. You can run a
 local DB server or create a docker container using the provided test compose
@@ -187,7 +183,7 @@ Run the tests (pre-test hook runs DB migrations):
 npm test
 ```
 
-# Creating a new database migration
+## Creating a new database migration
 If you need to migrate the database, you can create a new migration via `knex`, which will create the migration file for you based in part on the migration name you provide. From the root of this repo, run:
 ```
 `npm bin`/knex migrate:make <the name of your migration>
@@ -195,13 +191,13 @@ If you need to migrate the database, you can create a new migration via `knex`, 
 
 See [knex documentation](https://knexjs.org/#Installation-migrations) for more details.
 
-# Running database migrations
+## Running database migrations
 
-## Locally
+### Locally
 
 `npm run migrate`
 
-## In production
+### In production
 
 In production, you can run database migrations via `cf run-task`. As with anything in production, be careful when doing this! First, try checking the current status of migrations using the `migrate:status` command
 
@@ -230,7 +226,8 @@ cf run-task analytics-reporter-api --command "knex migrate:latest" --name run_db
 ```
 
 See [knex documentation](https://knexjs.org/#Installation-migrations) for more details and options on the `migrate` command.
-### Public domain
+
+## Public domain
 
 This project is in the worldwide [public domain](LICENSE.md). As stated in
 [CONTRIBUTING](CONTRIBUTING.md):
