@@ -1,0 +1,100 @@
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: 'npm'
+      - name: install dependencies
+        run: npm ci
+      - name: lint javascript
+        run: npm run lint
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    #Spin up postgres as a service, wait till healthy before moving on. Uses latest Postgres Version.
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: analytics_reporter_test
+          POSTGRES_USER: analytics
+          POSTGRES_PASSWORD: 123abc
+        ports:
+          - 5432:5432
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+          cache: 'npm'
+      - name: install dependencies
+        run: npm ci
+      - name: run tests
+        run: npm test
+  deploy_dev:
+    needs:
+      - lint
+      - test
+    if: github.ref == 'refs/heads/develop'
+    uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
+    with:
+      APP_NAME: ${{ vars.APP_NAME_DEV }}
+      DB_NAME: ${{ vars.DB_NAME_DEV }}
+      NEW_RELIC_APP_NAME:
+      ORGANIZATION_NAME: gsa-opp-analytics
+      SPACE_NAME: analytics-dev
+    secrets:
+      CF_USERNAME: ${{ secrets.CF_USERNAME_DEV }}
+      CF_PASSWORD: ${{ secrets.CF_PASSWORD_DEV }}
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_DEV }}
+      NEW_RELIC_LICENSE_KEY:
+  deploy_stg:
+    needs:
+      - lint
+      - test
+    if: github.ref == 'refs/heads/staging'
+    uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
+    with:
+      APP_NAME: ${{ vars.APP_NAME_STG }}
+      DB_NAME: ${{ vars.DB_NAME_STG }}
+      NEW_RELIC_APP_NAME:
+      ORGANIZATION_NAME: gsa-opp-analytics
+      SPACE_NAME: analytics-staging
+    secrets:
+      CF_USERNAME: ${{ secrets.CF_USERNAME_STG }}
+      CF_PASSWORD: ${{ secrets.CF_PASSWORD_STG }}
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_STG }}
+      NEW_RELIC_LICENSE_KEY:
+  deploy_prd:
+    needs:
+      - lint
+      - test
+    if: github.ref == 'refs/heads/master'
+    uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
+    with:
+      APP_NAME: ${{ vars.APP_NAME_PRD }}
+      DB_NAME: ${{ vars.DB_NAME_PRD }}
+      NEW_RELIC_APP_NAME: ${{ vars.NEW_RELIC_APP_NAME_PRD }}
+      ORGANIZATION_NAME: gsa-opp-analytics
+      SPACE_NAME: analytics-production
+    secrets:
+      CF_USERNAME: ${{ secrets.CF_USERNAME_PRD }}
+      CF_PASSWORD: ${{ secrets.CF_PASSWORD_PRD }}
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_PRD }}
+      NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY_PRD }}
