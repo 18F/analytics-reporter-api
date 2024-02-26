@@ -7,6 +7,19 @@ A system for publishing data retrieved from the Google Analytics API by the
 This Analytics API serves data written to a PostgreSQL database by the Analytics
 Reporter, in response to HTTP requests.
 
+This project's data is provided by the Analytics Reporter using the [Google Analytics Data API v1](https://developers.google.com/analytics/devguides/reporting/data/v1/rest).
+The analytics data is processed into a flat data structure by the reporter and
+stored in the database which is then served by this API.
+
+The project previously used the [Google Analytics Core Reporting API v3](https://developers.google.com/analytics/devguides/reporting/core/v3/)
+and the [Google Analytics Real Time API v3](https://developers.google.com/analytics/devguides/reporting/realtime/v3/),
+also known as Universal Analytics,  which has slightly different data points.
+
+Analytics API v1 serves the Universal Analytics data and Analytics API v2 serves
+the new GA4 data. See [Migrating from API V1 to API V2](#migrating-from-api-v1-to-api-v2)
+for more details. The Universal Analytics API will be deprecated on July 1, 2024
+and the Analytics API v1 will no longer receive new data after that date.
+
 ## Setup
 
 This Analytics API maintains the schema for the database that the
