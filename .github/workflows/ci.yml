@@ -6,21 +6,21 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Code Checkout
+      - name: Code checkout
         uses: actions/checkout@v4
-      - name: Install Node
+      - name: Install node
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
           cache: 'npm'
-      - name: install dependencies
+      - name: Install node dependencies
         run: npm ci
-      - name: lint javascript
+      - name: Lint javascript
         run: npm run lint
   test:
     needs: lint
     runs-on: ubuntu-latest
-    #Spin up postgres as a service, wait till healthy before moving on. Uses latest Postgres Version.
+    # Start Postgres as a service, wait until healthy. Uses latest Postgres version.
     services:
       postgres:
         image: postgres:latest
@@ -36,16 +36,16 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - name: Code Checkout
+      - name: Code checkout
         uses: actions/checkout@v4
-      - name: Install Node
+      - name: Install node
         uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
           cache: 'npm'
-      - name: install dependencies
+      - name: Install node dependencies
         run: npm ci
-      - name: run tests
+      - name: Run tests
         run: npm test
   deploy_dev:
     needs:
@@ -55,15 +55,15 @@ jobs:
     uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
     with:
       APP_NAME: ${{ vars.APP_NAME_DEV }}
-      DB_NAME: ${{ vars.DB_NAME_DEV }}
-      NEW_RELIC_APP_NAME:
-      ORGANIZATION_NAME: gsa-opp-analytics
-      SPACE_NAME: analytics-dev
+      CF_ORGANIZATION_NAME: ${{ vars.CF_ORGANIZATION_NAME }}
+      CF_SPACE_NAME: ${{ vars.CF_SPACE_NAME_DEV }}
+      DB_SERVICE_NAME: ${{ vars.DB_SERVICE_NAME_DEV }}
+      NEW_RELIC_APP_NAME: ${{ vars.NEW_RELIC_APP_NAME_DEV }}
     secrets:
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_DEV }}
       CF_USERNAME: ${{ secrets.CF_USERNAME_DEV }}
       CF_PASSWORD: ${{ secrets.CF_PASSWORD_DEV }}
-      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_DEV }}
-      NEW_RELIC_LICENSE_KEY:
+      NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY_DEV }}
   deploy_stg:
     needs:
       - lint
@@ -72,15 +72,15 @@ jobs:
     uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
     with:
       APP_NAME: ${{ vars.APP_NAME_STG }}
-      DB_NAME: ${{ vars.DB_NAME_STG }}
-      NEW_RELIC_APP_NAME:
-      ORGANIZATION_NAME: gsa-opp-analytics
-      SPACE_NAME: analytics-staging
+      CF_ORGANIZATION_NAME: ${{ vars.CF_ORGANIZATION_NAME }}
+      CF_SPACE_NAME: ${{ vars.CF_SPACE_NAME_STG }}
+      DB_SERVICE_NAME: ${{ vars.DB_SERVICE_NAME_STG }}
+      NEW_RELIC_APP_NAME: ${{ vars.NEW_RELIC_APP_NAME_STG }}
     secrets:
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_STG }}
       CF_USERNAME: ${{ secrets.CF_USERNAME_STG }}
       CF_PASSWORD: ${{ secrets.CF_PASSWORD_STG }}
-      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_STG }}
-      NEW_RELIC_LICENSE_KEY:
+      NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY_STG }}
   deploy_prd:
     needs:
       - lint
@@ -89,12 +89,12 @@ jobs:
     uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
     with:
       APP_NAME: ${{ vars.APP_NAME_PRD }}
-      DB_NAME: ${{ vars.DB_NAME_PRD }}
+      CF_ORGANIZATION_NAME: ${{ vars.CF_ORGANIZATION_NAME }}
+      CF_SPACE_NAME: ${{ vars.CF_SPACE_NAME_PRD }}
+      DB_SERVICE_NAME: ${{ vars.DB_SERVICE_NAME_PRD }}
       NEW_RELIC_APP_NAME: ${{ vars.NEW_RELIC_APP_NAME_PRD }}
-      ORGANIZATION_NAME: gsa-opp-analytics
-      SPACE_NAME: analytics-production
     secrets:
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_PRD }}
       CF_USERNAME: ${{ secrets.CF_USERNAME_PRD }}
       CF_PASSWORD: ${{ secrets.CF_PASSWORD_PRD }}
-      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_PRD }}
       NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY_PRD }}
