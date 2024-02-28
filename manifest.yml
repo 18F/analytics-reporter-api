@@ -3,10 +3,10 @@ applications:
   instances: 1
   memory: 128M
   buildpacks:
-      - nodejs_buildpack
+  - nodejs_buildpack
   command: "chmod +x ./entrypoint.sh && ./entrypoint.sh"
   services:
-  - ${DB_NAME}
+  - ${DB_SERVICE_NAME}
   stack: cflinuxfs4
   env:
     API_DATA_GOV_SECRET: ${API_DATA_GOV_SECRET}
