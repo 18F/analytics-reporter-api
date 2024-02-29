@@ -1,17 +1,17 @@
 applications:
-- name: analytics-reporter-api
+- name: ${APP_NAME}
   instances: 1
   memory: 128M
   buildpacks:
-      - nodejs_buildpack
+  - nodejs_buildpack
   command: "chmod +x ./entrypoint.sh && ./entrypoint.sh"
   services:
-  - analytics-reporter-database
+  - ${DB_SERVICE_NAME}
   stack: cflinuxfs4
   env:
     API_DATA_GOV_SECRET: ${API_DATA_GOV_SECRET}
     NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
-    NODE_ENV: production 
-    PGSSLMODE: true 
+    NODE_ENV: production
+    PGSSLMODE: true
 
