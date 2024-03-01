@@ -9,8 +9,6 @@ const parseLimitParam = (limitParam) => {
 
   if (limit > 10000 || limit <= 0) {
     return 10000;
-  } else if (limit <= 0) {
-    return 1000;
   }
   return limit;
 };

@@ -262,23 +262,24 @@ describe(`app with unspupported version`, () => {
   });
 
   it("should not accept unsupported versions", (done) => {
+    const unsupportedVersion = "v2.x";
+
     db.query = (params) => {
       expect(params.reportAgency).to.equal("fake-agency");
       expect(params.reportName).to.equal("fake-report");
-      const arr = handleIfRouteNotice(route, [
+      const arr = handleIfRouteNotice(unsupportedVersion, [
         { id: 1, date: new Date("2017-01-01") },
         { id: 2, date: new Date("2017-01-02") },
       ]);
       return Promise.resolve(arr);
     };
 
-    const unspupportedVersion = "v2.x";
     const expectedErrorMessage =
       "Version not found. Visit https://analytics.usa.gov/developer for information on the latest supported version.";
 
     const dataRequest = request(app)
       .get(
-        `/${unspupportedVersion}/agencies/fake-agency/reports/fake-report/data`,
+        `/${unsupportedVersion}/agencies/fake-agency/reports/fake-report/data`,
       )
       .expect(404);
 
