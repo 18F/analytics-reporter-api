@@ -196,6 +196,16 @@ Run the tests (pre-test hook runs DB migrations):
 npm test
 ```
 
+### Running the unit tests with code coverage reporting
+
+If you wish to see a code coverage report after running the tests, use the
+following command. This runs the DB migrations, tests, and the NYC code coverage
+tool:
+
+```shell
+npm run coverage
+```
+
 ## Creating a new database migration
 If you need to migrate the database, you can create a new migration via `knex`, which will create the migration file for you based in part on the migration name you provide. From the root of this repo, run:
 ```
