@@ -25,4 +25,8 @@ const middleware = () => {
   return expressWinston.logger(loggerConfig());
 };
 
-module.exports = { initialize, middleware };
+const errorLoggingMiddleware = () => {
+  return expressWinston.errorLogger(loggerConfig());
+};
+
+module.exports = { initialize, middleware, errorLoggingMiddleware };

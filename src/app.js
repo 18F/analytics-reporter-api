@@ -7,11 +7,13 @@ const routesVersioning = require("express-routes-versioning")();
 
 const app = express();
 
-app.use(apiDataGovFilter);
-app.use(router);
 if (process.env.NODE_ENV != "test") {
   app.use(logger.middleware());
 }
+
+app.use(apiDataGovFilter);
+app.use(router);
+app.use(logger.errorLoggingMiddleware());
 
 const formatDateForDataPoint = (dataPoint) => {
   if (dataPoint.date) {
