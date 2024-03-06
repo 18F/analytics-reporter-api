@@ -10,7 +10,7 @@ const app = express();
 app.use(apiDataGovFilter);
 app.use(router);
 if (process.env.NODE_ENV != "test") {
-  app.use(logger);
+  app.use(logger.middleware());
 }
 
 const formatDateForDataPoint = (dataPoint) => {
