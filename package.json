@@ -6,13 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon src/index.js",
-    "postinstall": "",
     "pretest": "NODE_ENV=test npm run migrate",
     "test": "NODE_ENV=test mocha",
     "migrate": "knex migrate:latest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "install-git-hooks": "cp ./hooks/* .git/hooks/ && chmod -R a+x .git/hooks/"
   },
   "repository": {
     "type": "git",

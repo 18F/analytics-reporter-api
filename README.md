@@ -34,19 +34,77 @@ configured before the Analytics Reporter starts writing data.
 
 ### Clone the code and install dependencies
 
-Once the database is created, clone the app and install the dependencies via NPM.
-The install script has a postinstall hook that will migrate
-the database.
-
-```shell
+```bash
 git clone git@github.com:18F/analytics-reporter-api.git
 cd analytics-reporter-api
 npm install
 ```
 
+### Linting
+
+This repo uses Eslint and Prettier for code static analysis and formatting. Run
+the linter with:
+
+```bash
+npm run lint
+```
+
+Automatically fix lint issues with:
+
+```bash
+npm run lint:fix
+```
+
+### Install git hooks
+
+There are some git hooks provided in the `./hooks` directory to help with
+common development tasks. These will checkout current NPM packages on branch
+change events, and run the linter on pre-commit.
+
+Install the provided hooks with the following command:
+
+```bash
+npm run install-git-hooks
+```
+
+### Running the unit tests
+
+The unit tests for this repo require a local PostgreSQL database. You can run a
+local DB server or create a docker container using the provided test compose
+file. (Requires docker and docker-compose to be installed)
+
+Starting a docker test DB:
+
+```bash
+docker-compose -f docker-compose.test.yml up
+```
+
+Once you have a PostgreSQL DB running locally, you can run the tests. The test
+DB connection in knexfile.js has some default connection config which can be
+overridden with environment variables.  If using the provided docker-compose DB
+then you can avoid setting the connection details.
+
+Run the tests (pre-test hook runs DB migrations):
+
+```bash
+npm test
+```
+
+#### Running the unit tests with code coverage reporting
+
+If you wish to see a code coverage report after running the tests, use the
+following command. This runs the DB migrations, tests, and the NYC code coverage
+tool:
+
+```bash
+npm run coverage
+```
+
+### Run the application
+
 Once the dependencies are installed, the app can be started.
 
-```shell
+```bash
 npm start
 ```
 
@@ -157,54 +215,6 @@ An enum which describes the session. Possible values:
 
 'Direct', 'Organic Search', 'Paid Social', 'Organic Social', 'Email',
 'Affiliates', 'Referral', 'Paid Search', 'Video', and 'Display'
-
-## Linting
-
-This repo uses Eslint and Prettier for code static analysis and formatting. Run
-the linter with:
-
-```shell
-npm run lint
-```
-
-Automatically fix lint issues with:
-
-```shell
-npm run lint:fix
-```
-
-## Running the unit tests
-
-The unit tests for this repo require a local PostgreSQL database. You can run a
-local DB server or create a docker container using the provided test compose
-file. (Requires docker and docker-compose to be installed)
-
-Starting a docker test DB:
-
-```shell
-docker-compose -f docker-compose.test.yml up
-```
-
-Once you have a PostgreSQL DB running locally, you can run the tests. The test
-DB connection in knexfile.js has some default connection config which can be
-overridden with environment variables.  If using the provided docker-compose DB
-then you can avoid setting the connection details.
-
-Run the tests (pre-test hook runs DB migrations):
-
-```shell
-npm test
-```
-
-### Running the unit tests with code coverage reporting
-
-If you wish to see a code coverage report after running the tests, use the
-following command. This runs the DB migrations, tests, and the NYC code coverage
-tool:
-
-```shell
-npm run coverage
-```
 
 ## Creating a new database migration
 If you need to migrate the database, you can create a new migration via `knex`, which will create the migration file for you based in part on the migration name you provide. From the root of this repo, run:
