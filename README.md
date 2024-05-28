@@ -20,6 +20,9 @@ the new GA4 data. See [Migrating from API V1 to API V2](#migrating-from-api-v1-t
 for more details. The Universal Analytics API will be deprecated on July 1, 2024
 and the Analytics API v1 will no longer receive new data after that date.
 
+The process for adding features to this project is described in
+[Development and deployment process](docs/development_and_deployment_process.md).
+
 ## Setup
 
 This Analytics API maintains the schema for the database that the
