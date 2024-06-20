@@ -6,12 +6,13 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon src/index.js",
-    "postinstall": "",
     "pretest": "NODE_ENV=test npm run migrate",
     "test": "NODE_ENV=test mocha",
     "migrate": "knex migrate:latest",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "coverage": "nyc npm run test",
+    "install-git-hooks": "cp ./hooks/* .git/hooks/ && chmod -R a+x .git/hooks/"
   },
   "repository": {
     "type": "git",
@@ -24,14 +25,18 @@
   },
   "homepage": "https://github.com/18F/analytics-reporter-api#readme",
   "devDependencies": {
+    "@eslint/js": "^8.57.0",
     "chai": "^4.3.10",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "extend": ">= 3.0.2",
+    "globals": "^14.0.0",
     "mocha": "^10.2.0",
     "nodemon": "^3.0.1",
+    "nyc": "^15.1.0",
     "proxyquire": "^2.1.3",
+    "sinon": "^17.0.1",
     "supertest": "^6.3.3",
     "supertest-as-promised": "^4.0.2"
   },
@@ -42,7 +47,6 @@
     "knex": "^3.0.1",
     "lodash": ">= 4.17.21",
     "pg": "^8.11.3",
-    "sinon": "^17.0.0",
     "winston": "^3.11.0"
   },
   "optionalDependencies": {
