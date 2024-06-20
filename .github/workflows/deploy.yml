@@ -47,6 +47,9 @@ jobs:
           node-version: "lts/*"
           cache: 'npm'
       - name: Install node dependencies
+        # This causes npm install to omit dev dependencies per NPM docs.
+        env:
+          NODE_ENV: production
         run: npm ci
       - name: Install cloud foundry CLI for interacting with cloud.gov
         run: |
@@ -60,16 +63,17 @@ jobs:
       - name: Replace config.js and knexfile.js with .cloudgov versions of those files
         run: |
           rm ./src/config.js
-          mv ./src/config.js.cloudgov ./src/config.js
+          mv ./src/config.cloudgov.js ./src/config.js
           rm knexfile.js
-          mv knexfile.js.cloudgov knexfile.js
+          mv knexfile.cloudgov.js knexfile.js
       - name: Login to cloud.gov and deploy
         run: |
           set -e
           # Log into cloud.gov
           cf api api.fr.cloud.gov
           cf login -u $CF_USERNAME -p $CF_PASSWORD -o $CF_ORGANIZATION_NAME -s $CF_SPACE_NAME
-          cf push -f "./manifest.yml" --no-start
-          cf set-env $APP_NAME API_DATA_GOV_SECRET "$API_DATA_GOV_SECRET"
-          cf restage $APP_NAME
+          # Deploy app
+          cf push -f "./manifest.yml"
+          # Create apps.internal route for the application
+          cf map-route $APP_NAME apps.internal --hostname $APP_NAME
           cf logout
