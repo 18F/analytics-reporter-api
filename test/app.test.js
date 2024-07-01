@@ -47,12 +47,12 @@ routes.forEach((route) => {
         .expect(200);
 
       dataRequest
-        .then((response) => {
-          const arr = handleIfRouteNotice(route, [
+        .then((actualResponse) => {
+          const expectedResponseBody = handleIfRouteNotice(route, [
             { id: 1, date: "2017-01-01" },
             { id: 2, date: "2017-01-02" },
           ]);
-          expect(response.body).to.deep.equal(arr);
+          expect(actualResponse.body).to.deep.equal(expectedResponseBody);
           done();
         })
         .catch(done);
@@ -74,12 +74,12 @@ routes.forEach((route) => {
         .expect(200);
 
       dataRequest
-        .then((response) => {
-          const arr = handleIfRouteNotice(route, [
+        .then((actualResponse) => {
+          const expectedResponseBody = handleIfRouteNotice(route, [
             { id: 1, date: "2017-01-01" },
             { id: 2, date: "2017-01-02" },
           ]);
-          expect(response.body).to.deep.equal(arr);
+          expect(actualResponse.body).to.deep.equal(expectedResponseBody);
           done();
         })
         .catch(done);
@@ -102,12 +102,12 @@ routes.forEach((route) => {
         .expect(200);
 
       dataRequest
-        .then((response) => {
-          const arr = handleIfRouteNotice(route, [
+        .then((actualResponse) => {
+          const expectedResponseBody = handleIfRouteNotice(route, [
             { id: 1, date: "2017-01-01" },
             { id: 2, date: "2017-01-02" },
           ]);
-          expect(response.body).to.deep.equal(arr);
+          expect(actualResponse.body).to.deep.equal(expectedResponseBody);
           done();
         })
         .catch(done);
@@ -122,11 +122,12 @@ routes.forEach((route) => {
         .expect(400);
 
       dataRequest
-        .then((response) => {
-          expect(response.body).to.deep.equal({
+        .then((actualResponse) => {
+          const expectedResponseBody = {
             message: "An error occurred. Please check the application logs.",
             status: 400,
-          });
+          };
+          expect(actualResponse.body).to.deep.equal(expectedResponseBody);
           done();
         })
         .catch(done);
@@ -155,12 +156,13 @@ routes.forEach((route) => {
         .expect(400);
 
       dataRequest
-        .then((response) => {
-          expect(response.body).to.deep.equal({
+        .then((actualResponse) => {
+          const expectedResponseBody = {
             message:
               "You are requesting a report that cannot be filtered on domain. Please try one of the following reports: site, domain, download, second-level-domain.",
             status: 400,
-          });
+          };
+          expect(actualResponse.body).to.deep.equal(expectedResponseBody);
           done();
         })
         .catch(done);
@@ -186,8 +188,8 @@ routes.forEach((route) => {
         .expect(200);
 
       dataRequest
-        .then((response) => {
-          const arr = handleIfRouteNotice(route, [
+        .then((actualResponse) => {
+          const expectedResponseBody = handleIfRouteNotice(route, [
             {
               id: 1,
               date: "2017-01-01",
@@ -195,60 +197,7 @@ routes.forEach((route) => {
               domain: "fakeiscool.gov",
             },
           ]);
-          expect(response.body).to.deep.equal(arr);
-          done();
-        })
-        .catch(done);
-    });
-
-    it("should pass params from the url to db.query and render the result for a domain query for a download report", (done) => {
-      db.query = (params) => {
-        expect(params.domain).to.equal("fakeiscool.gov");
-        expect(params.reportName).to.equal("download");
-        const arr = handleIfRouteNotice(route, [
-          {
-            id: 1,
-            date: new Date("2017-01-01"),
-            report_name: "download",
-            data: { page: "fakeiscool.gov/w8.pdf" },
-          },
-          {
-            id: 2,
-            date: new Date("2017-01-02"),
-            report_name: "download",
-            data: { page: "fakeiscool.gov/westworldtheshow/w8.pdf" },
-          },
-          {
-            id: 3,
-            date: new Date("2017-01-03"),
-            report_name: "download",
-            data: { page: "notiscool.gov/westworldtheshow/timewarpagain.pdf" },
-          },
-        ]);
-        return Promise.resolve(arr);
-      };
-
-      const dataRequest = request(app)
-        .get(`/${route}/domain/fakeiscool.gov/reports/download/data`)
-        .expect(200);
-
-      dataRequest
-        .then((response) => {
-          const arr = handleIfRouteNotice(route, [
-            {
-              id: 1,
-              date: "2017-01-01",
-              page: "fakeiscool.gov/w8.pdf",
-              report_name: "download",
-            },
-            {
-              id: 2,
-              date: "2017-01-02",
-              report_name: "download",
-              page: "fakeiscool.gov/westworldtheshow/w8.pdf",
-            },
-          ]);
-          expect(response.body).to.deep.equal(arr);
+          expect(actualResponse.body).to.deep.equal(expectedResponseBody);
           done();
         })
         .catch(done);
@@ -284,11 +233,12 @@ describe(`app with unspupported version`, () => {
       .expect(404);
 
     dataRequest
-      .then((response) => {
-        expect(response).to.include({
+      .then((actualResponse) => {
+        const expectedResponse = {
           _body: expectedErrorMessage,
           status: 404,
-        });
+        };
+        expect(actualResponse).to.include(expectedResponse);
         done();
       })
       .catch(done);

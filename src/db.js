@@ -42,10 +42,16 @@ const queryDomain = (
 ) => {
   const timeQuery = buildTimeQuery(before, after);
 
+  const mainQuery = db(dbTable).where({ report_name: reportName });
+
+  if (reportName == "download") {
+    mainQuery.whereRaw("data->> 'page' like ?", [`%${domain}%`]);
+  } else {
+    mainQuery.whereRaw("data->> 'domain' = ?", [domain]);
+  }
+
   return (
-    db(dbTable)
-      .where({ report_name: reportName })
-      .whereRaw("data->> 'domain' = ?", [domain])
+    mainQuery
       .whereRaw(...timeQuery)
       // Using `orderByRaw` in order to specifcy NULLS LAST, see:
       // https://github.com/knex/knex/issues/282

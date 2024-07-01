@@ -1,7 +1,7 @@
 applications:
 - name: ${APP_NAME}
   instances: 1
-  memory: 128M
+  memory: 512M
   buildpacks:
   - nodejs_buildpack
   command: "chmod +x ./entrypoint.sh && ./entrypoint.sh"
