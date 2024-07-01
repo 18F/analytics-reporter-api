@@ -44,13 +44,6 @@ const checkDomainFilter = (req, res) => {
   });
 };
 
-const filterDownloadResponse = (response, params) => {
-  if (params.domain && params.reportName === "download") {
-    return response.filter((entry) => entry.page.includes(params.domain));
-  }
-  return response;
-};
-
 const fetchData = (req, res) => {
   const params = Object.assign(req.query, req.params);
   db.query(params)
@@ -71,8 +64,7 @@ const fetchData = (req, res) => {
         ),
       );
 
-      const filteredResponse = filterDownloadResponse(response, params);
-      res.json(filteredResponse);
+      res.json(response);
     })
     .catch((err) => {
       console.error("Unexpected Error:", err);
@@ -101,7 +93,18 @@ router.get(
   "/v:version/reports/:reportName/data",
   routesVersioning(
     {
-      "1.1.0": respondV1, // legacy
+      "1.1.0": fetchData,
+      "~2.0.0": fetchData,
+    },
+    NoMatchFoundCallback,
+  ),
+);
+
+router.get(
+  "/v:version/agencies/:reportAgency/reports/:reportName/data",
+  routesVersioning(
+    {
+      "1.1.0": fetchData,
       "~2.0.0": fetchData,
     },
     NoMatchFoundCallback,
@@ -112,19 +115,8 @@ router.get(
   "/v:version/domain/:domain/reports/:reportName/data",
   routesVersioning(
     {
-      "1.1.0": respondDomainV1, // legacy
+      "1.1.0": checkDomainFilter,
       "~2.0.0": checkDomainFilter,
-    },
-    NoMatchFoundCallback,
-  ),
-);
-
-router.get(
-  "/v:version/agencies/:reportAgency/reports/:reportName/data",
-  routesVersioning(
-    {
-      "1.1.0": respondV1, // legacy
-      "~2.0.0": fetchData,
     },
     NoMatchFoundCallback,
   ),
@@ -136,15 +128,6 @@ function NoMatchFoundCallback(req, res) {
     .json(
       "Version not found. Visit https://analytics.usa.gov/developer for information on the latest supported version.",
     );
-}
-
-// v1
-function respondV1(req, res) {
-  return fetchData(req, res);
-}
-
-function respondDomainV1(req, res) {
-  return checkDomainFilter(req, res);
 }
 
 module.exports = app;
