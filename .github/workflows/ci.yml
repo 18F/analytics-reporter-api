@@ -51,7 +51,7 @@ jobs:
     needs:
       - lint
       - test
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/feature/make_limit_param_work_for_download_report'
     uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
     with:
       APP_NAME: ${{ vars.APP_NAME_DEV }}
