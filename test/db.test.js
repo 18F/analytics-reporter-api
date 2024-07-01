@@ -361,6 +361,65 @@ describe("db", () => {
             });
         });
 
+        it("should only return 4 results that include download reports from the test.gov domain, when multiple domains", (done) => {
+          const testData = [
+            {
+              report_name: "download",
+              date: "2017-01-02",
+              data: { page: "www.test.gov" },
+            },
+            {
+              report_name: "download",
+              date: "2017-01-02",
+              data: { page: "test.gov" },
+            },
+            {
+              report_name: "download",
+              date: "2017-01-01",
+              data: { page: "test.gov/example" },
+            },
+            {
+              report_name: "download",
+              date: "2017-01-01",
+              data: { page: "www.test.gov/example" },
+            },
+            {
+              report_name: "download",
+              date: "2017-01-03",
+              data: { page: "usda.gov" },
+            },
+          ];
+          database
+            .client(table)
+            .insert(testData)
+            .then(() => {
+              return db.queryDomain(
+                "test.gov",
+                "download",
+                1000,
+                1,
+                null,
+                null,
+                table,
+              );
+            })
+            .then((results) => {
+              expect(results).to.have.length(4);
+              results.forEach((resultItem, index) => {
+                expect(resultItem.report_name).to.equal(
+                  testData[index].report_name,
+                );
+                expect(resultItem.data.page).to.equal(
+                  testData[index].data.page,
+                );
+              });
+              done();
+            })
+            .catch((err) => {
+              done(err);
+            });
+        });
+
         it("should only return 2 results that include site reports from the test.gov domain, when before date parameters are in", (done) => {
           database
             .client(table)
