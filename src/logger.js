@@ -14,6 +14,7 @@ const loggerConfig = () => {
         level: config.log_level,
       }),
     ],
+    headerBlacklist: ["x-api-key", "api-data-gov-secret"],
   };
 };
 
