@@ -8,6 +8,9 @@ applications:
   services:
   - ${DB_SERVICE_NAME}
   stack: cflinuxfs4
+  routes:
+  - route: ${APP_NAME}.app.cloud.gov
+  - route: ${APP_NAME}.apps.internal
   env:
     API_DATA_GOV_SECRET: ${API_DATA_GOV_SECRET}
     NEW_RELIC_APP_NAME: ${NEW_RELIC_APP_NAME}
