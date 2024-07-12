@@ -18,14 +18,25 @@ const loggerConfig = () => {
   };
 };
 
+/**
+ * @returns {import("winston")} the configured winston instance
+ */
 const initialize = () => {
   return winston.createLogger(loggerConfig());
 };
 
+/**
+ * @returns {import("express-winston")} the configured express-winston
+ * logging middleware instance
+ */
 const middleware = () => {
   return expressWinston.logger(loggerConfig());
 };
 
+/**
+ * @returns {import("express-winston")} the configured express-winston error
+ * logging middleware instance
+ */
 const errorLoggingMiddleware = () => {
   return expressWinston.errorLogger(loggerConfig());
 };
