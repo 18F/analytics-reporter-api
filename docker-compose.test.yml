@@ -1,10 +1,10 @@
-version: "3.0"
 services:
-  db:
+  db-test:
     image: postgres:16
     environment:
       - POSTGRES_DB=analytics_reporter_test
       - POSTGRES_USER=analytics
       - POSTGRES_PASSWORD=123abc
     ports:
-      - "5432:5432"
+      # Non-standard port to deconflict with the dev db
+      - "5431:5432"

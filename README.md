@@ -30,10 +30,10 @@ This Analytics API maintains the schema for the database that the
 writes to. Thus, the Analytics API must be setup and
 configured before the Analytics Reporter starts writing data.
 
-### Prerequistites
+### Prerequisites
 
 * NodeJS > v20.x
-* A postgres DB running
+* Docker (used to run Postgres)
 
 ### Clone the code and install dependencies
 
@@ -72,20 +72,15 @@ npm run install-git-hooks
 
 ### Running the unit tests
 
-The unit tests for this repo require a local PostgreSQL database. You can run a
-local DB server or create a docker container using the provided test compose
-file. (Requires docker and docker-compose to be installed)
+The unit tests for this repo require a local PostgreSQL database.
 
-Starting a docker test DB:
+Start the test DB in Docker:
 
 ```bash
-docker-compose -f docker-compose.test.yml up
+docker compose -f docker-compose.test.yml up
 ```
 
-Once you have a PostgreSQL DB running locally, you can run the tests. The test
-DB connection in knexfile.js has some default connection config which can be
-overridden with environment variables.  If using the provided docker-compose DB
-then you can avoid setting the connection details.
+The test DB connection in knexfile.js has some default connection config which works out-of-the-box with the docker-compose test db.
 
 Run the tests (pre-test hook runs DB migrations):
 
@@ -105,18 +100,35 @@ npm run coverage
 
 ### Run the application
 
-Once the dependencies are installed, the app can be started.
+Start up the dev database and run the migrations.
+
+```bash
+# Start database in Docker
+docker compose up -d
+
+# Run migrations
+npm run migrate
+```
+
+Now the app can be started.
 
 ```bash
 npm start
 ```
 
-The API should now be available at `http://localhost:4444/`
+The API should now be available at http://localhost:4444/. Note that the API will not render any data because the database is empty.
 
-Note that the API will not render any data because the database is empty.
-The [Analytics Reporter](https://github.com/18F/analytics-reporter)
-can be configured to write to the same database and run with the
-`--write-to-database` option in order to populate some records.
+### Load data with analytics-reporter
+Data for the API is loaded into the database by the [Analytics Reporter](https://github.com/18F/analytics-reporter). For dev environments,
+the default database configuration for both the `analytics-reporter` repo and the `analytics-reporter-api` repo point to the same database.
+
+Follow the instructions in the `analytics-reporter` README to set up the reporter and configure an agency to collect data for. 
+Ignore any instructions about starting up a database - you'll use the database you already have running.
+Once setup is done, run the reporter with the `--write-to-database` option.
+
+Now you should be able to retrieve data for the agency you selected. For instance, if you configured
+the reporter to load data for `general-services-administration`, then JSON data about browser demographics should be available at
+http://localhost:4444/v2.0.0/agencies/general-services-administration/reports/browsers/data.
 
 ## Using the API
 
@@ -124,7 +136,7 @@ Full API docs can be found here: https://open.gsa.gov/api/dap/
 
 ### Environments
 
-The base URLs for the 3 API envrionments:
+The base URLs for the 3 API environments:
   - development: https://api.gsa.gov/analytics/dap/develop/
   - staging: https://api.gsa.gov/analytics/dap/staging/
   - production: https://api.gsa.gov/analytics/dap/
