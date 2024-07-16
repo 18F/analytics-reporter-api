@@ -1,3 +1,7 @@
+/**
+ * @param {import("knex").Knex} knex the instance of knex
+ * @returns {Promise<void>} resolves or rejects when the SQL statement completes
+ */
 exports.up = function (knex) {
   return knex.schema.createTable("analytics_data", (table) => {
     table.increments("id");
@@ -9,6 +13,10 @@ exports.up = function (knex) {
   });
 };
 
+/**
+ * @param {import("knex").Knex} knex the instance of knex
+ * @returns {Promise<void>} resolves or rejects when the SQL statement completes
+ */
 exports.down = function (knex) {
   return knex.schema.dropTable("analytics_data");
 };
