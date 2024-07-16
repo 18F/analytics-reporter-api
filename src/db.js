@@ -18,6 +18,11 @@ const parsePageParam = (pageParam) => {
   return Math.max(1, page);
 };
 
+/**
+ * @param {string} before the maximum date for the query in ISO format
+ * @param {string} after the minimum date for the query in ISO format
+ * @returns {string} the constructed where clause for the query
+ */
 const buildTimeQuery = (before, after) => {
   if (before && after) {
     return ['"date" <= ?::date AND "date" >= ?::date', [before, after]];
@@ -31,6 +36,16 @@ const buildTimeQuery = (before, after) => {
   return [true];
 };
 
+/**
+ * @param {string} domain the domain to be queried
+ * @param {string} reportName the report to be queried
+ * @param {number} limitParam the maximum number of results to return
+ * @param {number} pageParam the page of data to return based on the limit
+ * @param {string} before the maximum date for the query in ISO format
+ * @param {string} after the minimum date for the query in ISO format
+ * @param {string} dbTable the table name to query
+ * @returns {Promise<string[]>} resolves with the result of the database query
+ */
 const queryDomain = (
   domain,
   reportName,
@@ -73,6 +88,18 @@ const queryDomain = (
   );
 };
 
+/**
+ * @param {object} queryConfig the config values for the database query
+ * @param {string} queryConfig.reportName the report to be queried
+ * @param {string} queryConfig.reportAgency the agency to be queried
+ * @param {number} queryConfig.limit the max results to return
+ * @param {number} queryConfig.page the page of data to return based on the limit
+ * @param {string} queryConfig.domain the domain to be queried
+ * @param {string} queryConfig.after the minimum date for the query in ISO format
+ * @param {string} queryConfig.before the maximum date for the query in ISO format
+ * @param {string} queryConfig.version the API version
+ * @returns {Promise<string[]>} resolves with the result of the database query
+ */
 const query = ({
   reportName,
   reportAgency = null,
