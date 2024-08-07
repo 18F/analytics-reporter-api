@@ -258,15 +258,13 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                2,
-                1,
-                null,
-                null,
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 2,
+                page: 1,
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(2);
@@ -298,15 +296,13 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                1000,
-                1,
-                null,
-                null,
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 1000,
+                page: 1,
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(2);
@@ -340,15 +336,13 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                1000,
-                1,
-                null,
-                null,
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 1000,
+                page: 1,
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(2);
@@ -393,15 +387,13 @@ describe("db", () => {
             .client(table)
             .insert(testData)
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "download",
-                1000,
-                1,
-                null,
-                null,
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "download",
+                limit: 1000,
+                page: 1,
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(4);
@@ -446,15 +438,14 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                1000,
-                1,
-                "2017-10-20",
-                null,
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 1000,
+                page: 1,
+                before: "2017-10-20",
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(2);
@@ -494,15 +485,14 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                1000,
-                1,
-                null,
-                "2017-10-20",
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 1000,
+                page: 1,
+                after: "2017-10-20",
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(1);
@@ -552,15 +542,15 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                1000,
-                1,
-                "2018-01-02",
-                "2017-10-20",
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 1000,
+                page: 1,
+                before: "2018-01-02",
+                after: "2017-10-20",
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(2);
@@ -610,15 +600,15 @@ describe("db", () => {
               },
             ])
             .then(() => {
-              return db.queryDomain(
-                "test.gov",
-                "site",
-                1000,
-                1,
-                "2018-01-04",
-                "2017-10-20",
-                table,
-              );
+              return db.query({
+                domain: "test.gov",
+                reportName: "site",
+                limit: 1000,
+                page: 1,
+                before: "2018-01-04",
+                after: "2017-10-20",
+                version: queryVersion,
+              });
             })
             .then((results) => {
               expect(results).to.have.length(2);
