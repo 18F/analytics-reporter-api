@@ -115,7 +115,7 @@ const query = ({
   const dbTable = version === "1.1" ? "analytics_data" : "analytics_data_ga4";
   const limitParam = parseLimitParam(limit);
   const pageParam = parsePageParam(page);
-  if (domain && reportName !== "download") {
+  if (domain) {
     return queryDomain(
       domain,
       reportName,
