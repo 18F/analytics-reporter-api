@@ -62,7 +62,9 @@ const queryDomain = (
   if (reportName == "download") {
     mainQuery.whereRaw("data->> 'page' like ?", [`%${domain}%`]);
   } else {
-    mainQuery.whereRaw("data->> 'domain' = ?", [domain]);
+    mainQuery.whereRaw(
+      `data @> '${JSON.stringify({ domain }).replaceAll("'", "''").replaceAll("?", "\\?")}'::jsonb`,
+    );
   }
 
   return (
