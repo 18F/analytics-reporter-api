@@ -41,7 +41,7 @@
     "supertest": "^6.3.3"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.21.0",
     "express-routes-versioning": "^1.0.1",
     "express-winston": "^4.2.0",
     "knex": "^3.0.1",
