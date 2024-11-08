@@ -9,19 +9,16 @@ const db = proxyquire("../src/db", {
 describe("db", () => {
   const apiVersions = ["v1.1", "v2"];
 
-  before((done) => {
+  before(async () => {
     // Setup the test database client
-    database.createClient().then(() => done());
+    await database.createClient();
   });
 
-  after((done) => {
+  after(async () => {
     // Clean up the test database client and the application database client
-    database
-      .destroyClient()
-      .then(() => {
-        return db.dbClient.destroy();
-      })
-      .then(() => done());
+    await database.destroyClient().then(() => {
+      return db.dbClient.destroy();
+    });
   });
 
   apiVersions.forEach((apiVersion) => {
@@ -30,13 +27,13 @@ describe("db", () => {
         apiVersion === "v1.1" ? "analytics_data" : "analytics_data_ga4";
       const queryVersion = apiVersion === `v1.1` ? "1.1" : "2";
 
-      beforeEach((done) => {
-        database.resetSchema(table).then(() => done());
+      beforeEach(async () => {
+        await database.resetSchema(table);
       });
 
       describe(".query(params)", () => {
-        it("should return all rows for the given agency and report", (done) => {
-          database
+        it("should return all rows for the given agency and report", async () => {
+          await database
             .client(table)
             .insert([
               { report_name: "my-report", report_agency: "my-agency" },
@@ -55,13 +52,11 @@ describe("db", () => {
               expect(results).to.have.length(1);
               expect(results[0].report_name).to.equal("my-report");
               expect(results[0].report_agency).to.equal("my-agency");
-              done();
-            })
-            .catch(done);
+            });
         });
 
-        it("should return all rows without an agency if no agency name is given", (done) => {
-          database
+        it("should return all rows without an agency if no agency name is given", async () => {
+          await database
             .client(table)
             .insert([
               { report_name: "my-report", report_agency: "not-my-agency" },
@@ -77,13 +72,11 @@ describe("db", () => {
               expect(results).to.have.length(1);
               expect(results[0].report_name).to.equal("my-report");
               expect(results[0].report_agency).to.be.null;
-              done();
-            })
-            .catch(done);
+            });
         });
 
-        it("should sort the rows according to the date column", (done) => {
-          database
+        it("should sort the rows according to the date column", async () => {
+          await database
             .client(table)
             .insert([
               { report_name: "report", date: "2017-01-02" },
@@ -100,18 +93,16 @@ describe("db", () => {
                 const expectedDate = `2017-01-0${3 - index}`;
                 expect(resultDate).to.equal(expectedDate);
               });
-              done();
-            })
-            .catch(done);
+            });
         });
 
-        it("should limit the rows according to the limit param", (done) => {
+        it("should limit the rows according to the limit param", async () => {
           const rows = Array(5)
             .fill(0)
             .map(() => {
               return { report_name: "report", date: "2017-01-01" };
             });
-          database
+          await database
             .client(table)
             .insert(rows)
             .then(() => {
@@ -123,18 +114,16 @@ describe("db", () => {
             })
             .then((results) => {
               expect(results).to.have.length(4);
-              done();
-            })
-            .catch(done);
+            });
         });
 
-        it("should default to a limit of 1000", (done) => {
+        it("should default to a limit of 1000", async () => {
           const rows = Array(1001)
             .fill(0)
             .map(() => {
               return { report_name: "report", date: "2017-01-01" };
             });
-          database
+          await database
             .client(table)
             .insert(rows)
             .then(() => {
@@ -142,18 +131,16 @@ describe("db", () => {
             })
             .then((results) => {
               expect(results).to.have.length(1000);
-              done();
-            })
-            .catch(done);
+            });
         });
 
-        it("should have a maximum limit of 10,000", (done) => {
+        it("should have a maximum limit of 10,000", async () => {
           const rows = Array(11000)
             .fill(0)
             .map(() => {
               return { report_name: "report", date: "2017-01-01" };
             });
-          database
+          await database
             .client(table)
             .insert(rows)
             .then(() => {
@@ -165,20 +152,16 @@ describe("db", () => {
             })
             .then((results) => {
               expect(results).to.have.length(10000);
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should paginate on the page param", (done) => {
+        it("should paginate on the page param", async () => {
           const rows = Array(6)
             .fill(0)
             .map((val, index) => {
               return { report_name: "report", date: `2017-01-0${index + 1}` };
             });
-          database
+          await database
             .client(table)
             .insert(rows)
             .then(() => {
@@ -205,9 +188,7 @@ describe("db", () => {
               expect(results).to.have.length(3);
               expect(results[0].date.toISOString()).to.match(/^2017-01-03/);
               expect(results[2].date.toISOString()).to.match(/^2017-01-01/);
-              done();
-            })
-            .catch(done);
+            });
         });
       });
 
@@ -237,8 +218,8 @@ describe("db", () => {
       });
 
       describe(".queryDomain(params)", () => {
-        it("should only return 2 results that include site reports from the test.gov domain", (done) => {
-          database
+        it("should only return 2 results that include site reports from the test.gov domain", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -268,15 +249,11 @@ describe("db", () => {
             })
             .then((results) => {
               expect(results).to.have.length(2);
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 2 results that include site reports from the test.gov domain, when multiple reports", (done) => {
-          database
+        it("should only return 2 results that include site reports from the test.gov domain, when multiple reports", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -308,15 +285,11 @@ describe("db", () => {
               expect(results).to.have.length(2);
               expect(results[0].report_name).to.equal("site");
               expect(results[0].data.domain).to.equal("test.gov");
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 2 results that include site reports from the test.gov domain, when multiple domains", (done) => {
-          database
+        it("should only return 2 results that include site reports from the test.gov domain, when multiple domains", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -348,14 +321,10 @@ describe("db", () => {
               expect(results).to.have.length(2);
               expect(results[0].report_name).to.equal("site");
               expect(results[0].data.domain).to.equal("test.gov");
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 4 results that include download reports from the test.gov domain, when multiple domains", (done) => {
+        it("should only return 4 results that include download reports from the test.gov domain, when multiple domains", async () => {
           const testData = [
             {
               report_name: "download",
@@ -383,7 +352,7 @@ describe("db", () => {
               data: { page: "usda.gov" },
             },
           ];
-          database
+          await database
             .client(table)
             .insert(testData)
             .then(() => {
@@ -405,15 +374,11 @@ describe("db", () => {
                   testData[index].data.page,
                 );
               });
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 2 results that include site reports from the test.gov domain, when before date parameters are in", (done) => {
-          database
+        it("should only return 2 results that include site reports from the test.gov domain, when before date parameters are in", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -452,15 +417,11 @@ describe("db", () => {
               expect(results[0].report_name).to.equal("site");
               expect(results[0].data.domain).to.equal("test.gov");
               expect(results[0].date.toISOString()).to.match(/^2017-01-02/);
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 1 result that include site reports from the test.gov domain, when after date parameters are in", (done) => {
-          database
+        it("should only return 1 result that include site reports from the test.gov domain, when after date parameters are in", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -499,15 +460,11 @@ describe("db", () => {
               expect(results[0].report_name).to.equal("site");
               expect(results[0].data.domain).to.equal("test.gov");
               expect(results[0].date.toISOString()).to.match(/^2018-01-03/);
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 2 result that include site reports from the test.gov domain, when after/before date parameters set", (done) => {
-          database
+        it("should only return 2 result that include site reports from the test.gov domain, when after/before date parameters set", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -557,15 +514,11 @@ describe("db", () => {
               expect(results[0].report_name).to.equal("site");
               expect(results[0].data.domain).to.equal("test.gov");
               expect(results[0].date.toISOString()).to.match(/^2017-11-04/);
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
 
-        it("should only return 2 result that include site reports from the test.gov domain, when after/before date parameters set", (done) => {
-          database
+        it("should only return 2 result that include site reports from the test.gov domain, when after/before date parameters set", async () => {
+          await database
             .client(table)
             .insert([
               {
@@ -615,10 +568,6 @@ describe("db", () => {
               expect(results[0].report_name).to.equal("site");
               expect(results[0].data.domain).to.equal("test.gov");
               expect(results[0].date.toISOString()).to.match(/^2018-01-03/);
-              done();
-            })
-            .catch((err) => {
-              done(err);
             });
         });
       });
