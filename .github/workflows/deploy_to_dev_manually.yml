@@ -1,0 +1,19 @@
+name: Deploy to dev manually
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy_dev:
+    uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
+    with:
+      APP_NAME: ${{ vars.APP_NAME_DEV }}
+      CF_ORGANIZATION_NAME: ${{ vars.CF_ORGANIZATION_NAME }}
+      CF_SPACE_NAME: ${{ vars.CF_SPACE_NAME_DEV }}
+      DB_SERVICE_NAME: ${{ vars.DB_SERVICE_NAME_DEV }}
+      NEW_RELIC_APP_NAME: ${{ vars.NEW_RELIC_APP_NAME_DEV }}
+    secrets:
+      API_DATA_GOV_SECRET: ${{ secrets.API_DATA_GOV_SECRET_DEV }}
+      CF_USERNAME: ${{ secrets.CF_USERNAME_DEV }}
+      CF_PASSWORD: ${{ secrets.CF_PASSWORD_DEV }}
+      NEW_RELIC_LICENSE_KEY: ${{ secrets.NEW_RELIC_LICENSE_KEY_DEV }}

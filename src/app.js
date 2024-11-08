@@ -4,6 +4,7 @@ const db = require("./db");
 const logger = require("./logger");
 const router = express.Router();
 const routesVersioning = require("express-routes-versioning")();
+const yup = require("yup");
 
 const app = express();
 
@@ -15,6 +16,10 @@ app.use(apiDataGovFilter);
 app.use(router);
 app.use(logger.errorLoggingMiddleware());
 
+/**
+ * Converts date object to an ISO date string without time and zone.
+ * @param dataPoint
+ */
 const formatDateForDataPoint = (dataPoint) => {
   if (dataPoint.date) {
     return dataPoint.date.toISOString().slice(0, 10);
@@ -28,6 +33,17 @@ const acceptableDomainReports = [
   "download",
   "second-level-domain",
 ];
+
+/**
+ * Currently the only regex match in request validation is on date string
+ * formatting. Hard code that the yup.string().matches() validation returns a
+ * helpful error message when dates are not formatted correctly.
+ */
+yup.setLocale({
+  string: {
+    matches: "must be a date in format 'YYYY-MM-DD'",
+  },
+});
 
 const checkDomainFilter = (req, res) => {
   if (
@@ -45,8 +61,18 @@ const checkDomainFilter = (req, res) => {
 };
 
 const fetchData = (req, res) => {
+  try {
+    validateRequest(req);
+  } catch (err) {
+    res.status(400);
+    return res.json({
+      message: `Invalid request params: ${err}`,
+      status: 400,
+    });
+  }
   const params = Object.assign(req.query, req.params);
-  db.query(params)
+  return db
+    .query(params)
     .then((result) => {
       const response = result.map((dataPoint) =>
         Object.assign(
@@ -68,12 +94,31 @@ const fetchData = (req, res) => {
     })
     .catch((err) => {
       console.error("Unexpected Error:", err);
-      res.status(400);
+      res.status(500);
       return res.json({
         message: "An error occurred. Please check the application logs.",
-        status: 400,
+        status: 500,
       });
     });
+};
+
+const validateRequest = (req) => {
+  const isoDateRegex = /^\d{4}-([0][1-9]|1[0-2])-([0][1-9]|[1-2]\d|3[01])$/;
+  const requestSchema = yup.object({
+    query: yup.object({
+      before: yup.string().matches(isoDateRegex),
+      after: yup.string().matches(isoDateRegex),
+      limit: yup.number().positive().integer().max(10000),
+      page: yup.number().positive().integer(),
+    }),
+    params: yup.object({
+      domain: yup.string(),
+      reportAgency: yup.string(),
+      reportName: yup.string(),
+      version: yup.string(),
+    }),
+  });
+  return requestSchema.validateSync(req);
 };
 
 app.get("/", (req, res) => {
