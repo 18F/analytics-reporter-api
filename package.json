@@ -47,7 +47,8 @@
     "knex": "^3.0.1",
     "lodash": ">= 4.17.21",
     "pg": "^8.11.3",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "yup": "^1.4.0"
   },
   "optionalDependencies": {
     "newrelic": "^11.3.0"
