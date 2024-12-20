@@ -84,7 +84,7 @@ const queryDomain = (
       // pulls from Google Analytics) happens to be in order by visits or total_events, so ordering by
       // IDs may in practice keep the same ordering as before - but it would be best not to rely on this.
       // A longer term fix would be to move the total_events and visits fields to their own columns.
-      .orderBy("id", "asc")
+      //.orderBy("id", "asc")
       .limit(limitParam)
       .offset((pageParam - 1) * limitParam)
   );
@@ -152,7 +152,7 @@ const query = ({
       // pulls from Google Analytics) happens to be in order by visits or total_events, so ordering by
       // IDs may in practice keep the same ordering as before - but it would be best not to rely on this.
       // A longer term fix would be to move the total_events and visits fields to their own columns.
-      .orderBy("id", "asc")
+      //.orderBy("id", "asc")
       .limit(limitParam)
       .offset((pageParam - 1) * limitParam)
   );
