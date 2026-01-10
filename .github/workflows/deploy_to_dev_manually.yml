@@ -5,6 +5,8 @@ on:
 
 jobs:
   deploy_dev:
+    permissions:
+      contents: read
     uses: 18F/analytics-reporter-api/.github/workflows/deploy.yml@develop
     with:
       APP_NAME: ${{ vars.APP_NAME_DEV }}

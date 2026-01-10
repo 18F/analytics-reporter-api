@@ -1,4 +1,5 @@
-[![Code Climate](https://codeclimate.com/github/18F/analytics-reporter-api/badges/gpa.svg)](https://codeclimate.com/github/18F/analytics-reporter-api)  [![CircleCI](https://circleci.com/gh/18F/analytics-reporter-api.svg?style=shield)](https://circleci.com/gh/18F/analytics-reporter-api)
+![Build Status](https://github.com/18F/analytics-reporter-api/actions/workflows/ci.yml/badge.svg?branch=master)
+[![Snyk](https://snyk.io/test/github/18F/analytics-reporter-api/badge.svg)](https://snyk.io/test/github/18F/analytics-reporter-api)
 
 # Analytics API
 
@@ -122,7 +123,7 @@ The API should now be available at http://localhost:4444/. Note that the API wil
 Data for the API is loaded into the database by the [Analytics Reporter](https://github.com/18F/analytics-reporter). For dev environments,
 the default database configuration for both the `analytics-reporter` repo and the `analytics-reporter-api` repo point to the same database.
 
-Follow the instructions in the `analytics-reporter` README to set up the reporter and configure an agency to collect data for. 
+Follow the instructions in the `analytics-reporter` README to set up the reporter and configure an agency to collect data for.
 Ignore any instructions about starting up a database - you'll use the database you already have running.
 Once setup is done, run the reporter with the `--write-to-database` option.
 
