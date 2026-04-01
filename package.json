@@ -51,7 +51,7 @@
     "yup": "^1.4.0"
   },
   "optionalDependencies": {
-    "newrelic": "^11.3.0"
+    "newrelic": "^13.9.0"
   },
   "engines": {
     "node": "22.x.x"
