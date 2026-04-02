@@ -45,7 +45,7 @@
     "express-routes-versioning": "^1.0.1",
     "express-winston": "^4.2.0",
     "knex": "^3.0.1",
-    "lodash": ">= 4.17.21",
+    "lodash": ">= 4.18.1",
     "pg": "^8.11.3",
     "winston": "^3.11.0",
     "yup": "^1.4.0"
